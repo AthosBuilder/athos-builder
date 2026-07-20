@@ -667,6 +667,34 @@ function appSupport(cpu, gpu, ram) {
     { name: "Bureautique & navigation", ok: true, need: "" },
   ];
 }
+// Estimation des capacités IA & création selon VRAM / cœurs
+function aiCreation(cpu, gpu, ram) {
+  const v = gpu.vram, cores = cpu.cores;
+  // LLM local : dépend surtout de la VRAM
+  const llm = v >= 48 ? { lvl: "top", txt: "Modèles 70B quantifiés (Llama 70B, Qwen 72B) en local, fluide." }
+    : v >= 24 ? { lvl: "good", txt: "Modèles 30B quantifiés confortables ; 70B en version très compressée." }
+    : v >= 16 ? { lvl: "good", txt: "Modèles 13B fluides, 30B quantifiés jouables." }
+    : v >= 12 ? { lvl: "ok", txt: "Modèles 7B–13B quantifiés en local." }
+    : v >= 8 ? { lvl: "ok", txt: "Petits modèles 7B quantifiés seulement." }
+    : { lvl: "bad", txt: "VRAM trop juste pour de l'IA locale confortable." };
+  // Stable Diffusion / génération d'images
+  const sd = v >= 16 ? { lvl: "top", txt: "SDXL et Flux en pleine résolution, génération rapide." }
+    : v >= 12 ? { lvl: "good", txt: "SDXL fluide, Flux jouable." }
+    : v >= 8 ? { lvl: "ok", txt: "SD 1.5 rapide, SDXL possible mais plus lent." }
+    : v >= 6 ? { lvl: "ok", txt: "SD 1.5 en basse résolution." }
+    : { lvl: "bad", txt: "VRAM insuffisante pour la génération d'images." };
+  // Montage vidéo
+  const video = (v >= 16 && ram.gb >= 32 && cores >= 8) ? { lvl: "top", txt: "Montage 8K et effets lourds fluides (Premiere, DaVinci)." }
+    : (v >= 8 && ram.gb >= 32) ? { lvl: "good", txt: "Montage 4K confortable avec étalonnage." }
+    : (v >= 8 && ram.gb >= 16) ? { lvl: "ok", txt: "Montage 1080p fluide, 4K possible mais plus lourd." }
+    : { lvl: "bad", txt: "Configuration juste pour du montage au-delà du 1080p." };
+  return [
+    { name: "IA locale (LLM)", ...llm },
+    { name: "Génération d'images (Stable Diffusion, Flux)", ...sd },
+    { name: "Montage & création vidéo", ...video },
+  ];
+}
+
 function bottleneck(cpu, gpu) {
   const r = cpu.score / gpu.score;
   if (r < 0.72) return { type: "cpu", msg: "Ton processeur bride ta carte graphique : en 1080p tu perds des FPS. Monte en gamme CPU ou joue en 1440p/4K." };
@@ -1072,6 +1100,7 @@ export default function App() {
   const globalScore = Math.round(gpu.score * 0.55 + cpu.score * 0.3 + (Math.min(ram.gb, 64) / 64) * 100 * 0.15);
   const hasBlocker = checks.some((c) => c.lvl === "bad");
   const isPro = gpu.pro || cpu.pro;
+  const aiCaps = useMemo(() => aiCreation(cpu, gpu, ram), [cpu, gpu, ram]);
   // Ordre des usages selon le profil
   const appOrder = { gaming: ["Streaming","Bureautique"], workstation: ["3D","IA","Dev","Montage"], bureautique: ["Bureautique"] };
   const orderedApps = [...apps].sort((a, b) => {
@@ -1118,7 +1147,7 @@ export default function App() {
 
       <nav className="toc" aria-label="Sommaire">
         <a href="#s-budget">Budget</a><a href="#s-parts">Composants</a><a href="#s-compat">Compatibilité</a>
-        <a href="#s-perf">{isPro ? "Calcul" : "Performances"}</a><a href="#s-uses">Usages</a>
+        <a href="#s-perf">{isPro ? "Calcul" : "Performances"}</a><a href="#s-ai">IA</a><a href="#s-uses">Usages</a>
       </nav>
 
       <section className="panel prof-panel">
@@ -1273,6 +1302,19 @@ export default function App() {
         <p className="tiny note">Estimations indicatives basées sur des moyennes de benchmarks publics, réglages élevés, sans upscaling. Les FPS réels varient selon les pilotes, le refroidissement et les mises à jour des jeux.</p>
         </>
        )}
+      </section>
+
+      <section className="panel" id="s-ai">
+        <h2 className="panel-title">IA &amp; création</h2>
+        <ul className="compat">
+          {aiCaps.map((c) => (
+            <li key={c.name} className={c.lvl === "bad" ? "c-bad" : c.lvl === "ok" ? "c-warn" : "c-ok"}>
+              <span className="dot">{c.lvl === "top" ? "★" : c.lvl === "good" ? "✓" : c.lvl === "ok" ? "~" : "✕"}</span>
+              <span><b>{c.name}</b> — {c.txt}</span>
+            </li>
+          ))}
+        </ul>
+        <p className="tiny note">Estimations basées sur la VRAM, la mémoire et les cœurs. Les performances réelles dépendent des modèles, pilotes et logiciels utilisés.</p>
       </section>
 
       <section className="panel" id="s-uses">
