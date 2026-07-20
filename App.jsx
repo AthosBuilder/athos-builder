@@ -850,8 +850,7 @@ function LegalPage({ onBack }) {
       <h1>Mentions légales</h1>
       <h2>Éditeur du site</h2>
       <p><b>Athos Builder</b> — athosbuilder.fr</p>
-      <p>[TON PRÉNOM ET NOM]<br/>Statut : entrepreneur individuel (micro-entreprise)<br/>SIREN : [TON NUMÉRO SIREN]<br/>Contact : [TON EMAIL]</p>
-      <h2>Hébergement</h2>
+    
       <p>[Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, USA — ou ton hébergeur réel]</p>
       <h2>Liens d'affiliation</h2>
       <p>Ce site contient des liens d'affiliation. Lorsque vous achetez un produit via ces liens, l'éditeur du site perçoit une commission de la part du marchand, sans surcoût pour vous. Ces commissions n'influencent pas les scores et estimations affichés, qui sont calculés indépendamment.</p>
