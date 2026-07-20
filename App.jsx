@@ -755,6 +755,11 @@ function compatChecks({ cpu, gpu, ram, mb, psu, cooler, box, fans }) {
   if (ram.type === mb.ddr && (ram.mhz || 0) > mhzMax) {
     checks.push({ lvl: "warn", msg: `La fréquence ${ram.speed} dépasse ce que la plateforme ${mb.socket} garantit (${mhzMax} MHz). La RAM tournera plus lentement, sauf carte mère haut de gamme compatible.` });
   }
+  // Cohérence de gamme : carte mère d'entrée de gamme sous un CPU/GPU haut de gamme
+  const mbTier = /(X[0-9]|Z[0-9]|W[0-9]|TRX|WRX)/.test(mb.name) ? "high" : /B[0-9]/.test(mb.name) ? "mid" : "entry";
+  if (mbTier === "entry" && (gpu.score >= 70 || cpu.price >= 350)) {
+    checks.push({ lvl: "warn", msg: `Cette carte mère d'entrée de gamme est sous-dimensionnée pour un ${cpu.name} / ${gpu.name} : elle peut brider l'alimentation du processeur et limiter la fréquence mémoire. Une carte B ou X/Z serait plus cohérente.` });
+  }
   // 2. Alimentation
   const draw = gpu.watts + cpu.tdp + 75; // + carte mère, SSD, ventilos
   const headroom = psu.watts / draw;
@@ -983,8 +988,21 @@ function suggestBuild(budget, profile = "gaming") {
     cpu = affCpus.slice().sort((a, b) => P.cpuKey(b) - P.cpuKey(a))[0] || cheapest(cpuPool);
   }
 
-  const socketBoards = ALL_MBS.filter((m) => m.socket === cpu.socket).sort((a, b) => a.price - b.price);
-  let mb = (profile !== "bureautique" ? socketBoards.find((m) => m.ddr === "DDR5") : null) || socketBoards[0];
+  const boardTier = (m) => /(X[0-9]|Z[0-9]|W[0-9]|TRX|WRX)/.test(m.name) ? "high" : /B[0-9]/.test(m.name) ? "mid" : "entry";
+  const cfgLevel = (gpu.score >= 70 || cpu.price >= 350) ? "high" : (gpu.score >= 40 || cpu.price >= 150) ? "mid" : "entry";
+  const tierPref = cfgLevel === "high" ? ["high", "mid", "entry"] : cfgLevel === "mid" ? ["mid", "high", "entry"] : ["entry", "mid", "high"];
+  const socketBoards = ALL_MBS.filter((m) => m.socket === cpu.socket);
+  const pickBoard = () => {
+    for (const t of tierPref) {
+      const cand = socketBoards.filter((m) => boardTier(m) === t);
+      if (cand.length) {
+        const ddr5 = profile !== "bureautique" ? cand.filter((m) => m.ddr === "DDR5") : [];
+        return (ddr5.length ? ddr5 : cand).sort((a, b) => a.price - b.price)[0];
+      }
+    }
+    return socketBoards.sort((a, b) => a.price - b.price)[0];
+  };
+  let mb = pickBoard();
   const MHZ_MAX = { sTR5: 6400, AM5: 6400, LGA1851: 8000, LGA1700: 7200, AM4: 3600, LGA1200: 3200, LGA1151: 3200 };
   const mhzCap = MHZ_MAX[mb.socket] || 6000;
   const ramsType = ALL_RAMS.filter((r) => r.type === mb.ddr
