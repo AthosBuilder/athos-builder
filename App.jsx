@@ -255,8 +255,11 @@ section[id]{scroll-margin-top:16px}
 .field-search::placeholder{color:var(--dim)}
 .field-search:focus-visible{outline:none;border-color:var(--iris);box-shadow:0 0 0 3px rgba(225,29,46,.16)}
 
+/* ── Encart de partage (bas de page) ── */
+.share-panel{background:linear-gradient(180deg,rgba(225,29,46,.05),transparent),var(--panel)}
+.share-sub{color:var(--muted);font-size:14px;margin-bottom:16px;max-width:54ch;line-height:1.55}
 /* ── Bouton de partage ── */
-.share-btn{margin-top:12px;width:100%;background:var(--panel);color:var(--text);
+.share-btn{width:100%;background:var(--panel);color:var(--text);
   border:1px solid var(--line);border-radius:14px;padding:13px;font:inherit;font-size:14px;font-weight:600;
   cursor:pointer;transition:border-color .15s,transform .12s,background .15s}
 .share-btn:hover{border-color:var(--iris);transform:translateY(-1px)}
@@ -850,7 +853,8 @@ function LegalPage({ onBack }) {
       <h1>Mentions légales</h1>
       <h2>Éditeur du site</h2>
       <p><b>Athos Builder</b> — athosbuilder.fr</p>
-    
+      <p>[TON PRÉNOM ET NOM]<br/>Statut : entrepreneur individuel (micro-entreprise)<br/>SIREN : [TON NUMÉRO SIREN]<br/>Contact : [TON EMAIL]</p>
+      <h2>Hébergement</h2>
       <p>[Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, USA — ou ton hébergeur réel]</p>
       <h2>Liens d'affiliation</h2>
       <p>Ce site contient des liens d'affiliation. Lorsque vous achetez un produit via ces liens, l'éditeur du site perçoit une commission de la part du marchand, sans surcoût pour vous. Ces commissions n'influencent pas les scores et estimations affichés, qui sont calculés indépendamment.</p>
@@ -1107,10 +1111,6 @@ export default function App() {
         </div>
       </div>
 
-      <button className="share-btn" onClick={shareConfig}>
-        {shared ? "✓ Lien copié — colle-le où tu veux" : "⧉ Partager cette config par lien"}
-      </button>
-
       <nav className="toc" aria-label="Sommaire">
         <a href="#s-budget">Budget</a><a href="#s-parts">Composants</a><a href="#s-compat">Compatibilité</a>
         <a href="#s-perf">{isPro ? "Calcul" : "Performances"}</a><a href="#s-uses">Usages</a>
@@ -1283,6 +1283,14 @@ export default function App() {
             </li>
           ))}
         </ul>
+      </section>
+
+      <section className="panel share-panel">
+        <h2 className="panel-title">Partager ta config</h2>
+        <p className="share-sub">Ta configuration est prête ? Copie le lien : la personne qui l'ouvre retrouve exactement la même machine, prête à l'écran.</p>
+        <button className="share-btn" onClick={shareConfig}>
+          {shared ? "✓ Lien copié — colle-le où tu veux" : "⧉ Partager cette config par lien"}
+        </button>
       </section>
 
       <footer className="foot">
