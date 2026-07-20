@@ -504,16 +504,23 @@ const CPU_GROUPS = [
 
 const RAM_GROUPS = [
   { label: "DDR5 (plateformes récentes)", items: [
-    { id:"d5-256", name:"256 Go DDR5-5600 (workstation)", gb:256, type:"DDR5", speed:"5600 MHz", price:1350, ws:true },
-    { id:"d5-128", name:"128 Go DDR5-5600", gb:128, type:"DDR5", speed:"5600 MHz", price:690 },
-    { id:"d5-64", name:"64 Go DDR5-6000", gb:64, type:"DDR5", speed:"6000 MHz", price:379 },
-    { id:"d5-32", name:"32 Go DDR5-6000", gb:32, type:"DDR5", speed:"6000 MHz", price:189 },
-    { id:"d5-16", name:"16 Go DDR5-5600", gb:16, type:"DDR5", speed:"5600 MHz", price:95 },
+    { id:"d5-256-60", name:"256 Go DDR5-6000 (workstation)", gb:256, type:"DDR5", mhz:6000, speed:"6000 MHz", price:1450, ws:true },
+    { id:"d5-256", name:"256 Go DDR5-5600 (workstation)", gb:256, type:"DDR5", mhz:5600, speed:"5600 MHz", price:1350, ws:true },
+    { id:"d5-128-64", name:"128 Go DDR5-6400", gb:128, type:"DDR5", mhz:6400, speed:"6400 MHz", price:760 },
+    { id:"d5-128-60", name:"128 Go DDR5-6000", gb:128, type:"DDR5", mhz:6000, speed:"6000 MHz", price:720 },
+    { id:"d5-128", name:"128 Go DDR5-5600", gb:128, type:"DDR5", mhz:5600, speed:"5600 MHz", price:690 },
+    { id:"d5-64-64", name:"64 Go DDR5-6400", gb:64, type:"DDR5", mhz:6400, speed:"6400 MHz", price:409 },
+    { id:"d5-64", name:"64 Go DDR5-6000", gb:64, type:"DDR5", mhz:6000, speed:"6000 MHz", price:379 },
+    { id:"d5-32-80", name:"32 Go DDR5-8000", gb:32, type:"DDR5", mhz:8000, speed:"8000 MHz", price:279 },
+    { id:"d5-32-72", name:"32 Go DDR5-7200", gb:32, type:"DDR5", mhz:7200, speed:"7200 MHz", price:239 },
+    { id:"d5-32-64", name:"32 Go DDR5-6400", gb:32, type:"DDR5", mhz:6400, speed:"6400 MHz", price:209 },
+    { id:"d5-32", name:"32 Go DDR5-6000", gb:32, type:"DDR5", mhz:6000, speed:"6000 MHz", price:189 },
+    { id:"d5-16", name:"16 Go DDR5-5600", gb:16, type:"DDR5", mhz:5600, speed:"5600 MHz", price:95 },
   ]},
   { label: "DDR4 (plateformes 2019-2022)", items: [
-    { id:"d4-32", name:"32 Go DDR4-3600", gb:32, type:"DDR4", speed:"3600 MHz", price:129 },
-    { id:"d4-16", name:"16 Go DDR4-3600", gb:16, type:"DDR4", speed:"3600 MHz", price:69 },
-    { id:"d4-8", name:"8 Go DDR4-3200", gb:8, type:"DDR4", speed:"3200 MHz", price:38 },
+    { id:"d4-32", name:"32 Go DDR4-3600", gb:32, type:"DDR4", mhz:3600, speed:"3600 MHz", price:129 },
+    { id:"d4-16", name:"16 Go DDR4-3600", gb:16, type:"DDR4", mhz:3600, speed:"3600 MHz", price:69 },
+    { id:"d4-8", name:"8 Go DDR4-3200", gb:8, type:"DDR4", mhz:3200, speed:"3200 MHz", price:38 },
   ]},
 ];
 const SSD_GROUPS = [
@@ -663,6 +670,18 @@ function estimateFps(game, cpu, gpu, res) {
   const cpuCap = game.base * (cpu.score / 100) * (1 + (1 - game.cpuBound));
   return Math.round(Math.min(gpuFps, cpuCap));
 }
+// Bonus de score lié à la fréquence RAM (impact volontairement léger)
+function ramSpeedBonus(ram) {
+  const base = ram.type === "DDR5" ? 6000 : 3200;
+  const b = ((ram.mhz || base) - base) / 2000; // ex: DDR5-8000 -> +1, 6000 -> 0
+  return Math.max(-1, Math.min(2, b)) * 1.2; // borné, faible amplitude
+}
+// Score global (une décimale)
+function computeScore(cpu, gpu, ram) {
+  const base = gpu.score * 0.55 + cpu.score * 0.3 + (Math.min(ram.gb, 64) / 64) * 100 * 0.15;
+  return Math.round((base + ramSpeedBonus(ram)) * 10) / 10;
+}
+
 function fpsTier(fps) {
   if (fps >= 144) return { label: "Fluide e-sport", cls: "top" };
   if (fps >= 60) return { label: "Très jouable", cls: "good" };
@@ -723,6 +742,8 @@ function compatChecks({ cpu, gpu, ram, mb, psu, cooler, box, fans }) {
     : { lvl: "bad", msg: `Incompatible : le ${cpu.name} est en socket ${cpu.socket}, cette carte mère est en ${mb.socket}. Change de carte mère ou de CPU.` });
   // 2. RAM ↔ carte mère : type mémoire, puis capacité max par plateforme
   const RAM_MAX = { sTR5: 1024, AM5: 256, LGA1851: 256, LGA1700: 192, AM4: 128, LGA1200: 128, LGA1151: 128 };
+  const RAM_MHZ_MAX = { sTR5: 6400, AM5: 6400, LGA1851: 8000, LGA1700: 7200, AM4: 3600, LGA1200: 3200, LGA1151: 3200 };
+  const mhzMax = RAM_MHZ_MAX[mb.socket] || 6000;
   const maxRam = RAM_MAX[mb.socket] || 128;
   if (ram.type !== mb.ddr) {
     checks.push({ lvl: "bad", msg: `Incompatible : cette carte mère accepte uniquement de la ${mb.ddr}, pas de la ${ram.type}.` });
@@ -730,6 +751,9 @@ function compatChecks({ cpu, gpu, ram, mb, psu, cooler, box, fans }) {
     checks.push({ lvl: "bad", msg: `${ram.gb} Go dépasse la limite de la plateforme ${mb.socket} (${maxRam} Go maximum). Passe sur une carte mère qui accepte cette capacité${mb.socket !== "sTR5" ? ", ou sur une plateforme Threadripper (sTR5) pour aller plus haut" : ""}.` });
   } else {
     checks.push({ lvl: "ok", msg: `Mémoire ${ram.speed || ram.type} (${ram.gb} Go) compatible avec cette carte mère (max ${maxRam} Go sur ${mb.socket}).` });
+  }
+  if (ram.type === mb.ddr && (ram.mhz || 0) > mhzMax) {
+    checks.push({ lvl: "warn", msg: `La fréquence ${ram.speed} dépasse ce que la plateforme ${mb.socket} garantit (${mhzMax} MHz). La RAM tournera plus lentement, sauf carte mère haut de gamme compatible.` });
   }
   // 2. Alimentation
   const draw = gpu.watts + cpu.tdp + 75; // + carte mère, SSD, ventilos
@@ -961,11 +985,16 @@ function suggestBuild(budget, profile = "gaming") {
 
   const socketBoards = ALL_MBS.filter((m) => m.socket === cpu.socket).sort((a, b) => a.price - b.price);
   let mb = (profile !== "bureautique" ? socketBoards.find((m) => m.ddr === "DDR5") : null) || socketBoards[0];
+  const MHZ_MAX = { sTR5: 6400, AM5: 6400, LGA1851: 8000, LGA1700: 7200, AM4: 3600, LGA1200: 3200, LGA1151: 3200 };
+  const mhzCap = MHZ_MAX[mb.socket] || 6000;
   const ramsType = ALL_RAMS.filter((r) => r.type === mb.ddr
       && (!r.ws || mb.socket === "sTR5")
-      && (r.gb < 128 || ["sTR5", "AM5", "LGA1851", "LGA1700"].includes(mb.socket)))
-    .sort((a, b) => a.gb - b.gb);
-  let ram = ramsType.find((r) => r.gb === P.ram) || ramsType.filter((r)=>r.gb<=P.ram).pop() || ramsType[ramsType.length - 1];
+      && (r.gb < 128 || ["sTR5", "AM5", "LGA1851", "LGA1700"].includes(mb.socket))
+      && (r.mhz || 0) <= mhzCap)
+    .sort((a, b) => a.gb - b.gb || b.mhz - a.mhz);
+  // Pour une capacité donnée, prendre la barrette la plus rapide compatible
+  const ramAt = (gb) => ramsType.filter((r) => r.gb === gb).sort((a, b) => b.mhz - a.mhz)[0];
+  let ram = ramAt(P.ram) || ramsType.filter((r) => r.gb <= P.ram).pop() || ramsType[ramsType.length - 1];
   let ssd = ALL_SSDS.find((s) => s.id === "n1");
   let psu = psuFor(gpu, cpu), cooler = coolerFor(cpu), fans = fansFor(gpu), box = boxFor(gpu);
 
@@ -1042,7 +1071,7 @@ function readConfigFromUrl() {
 // Résumé chiffré d'une config, pour le comparateur
 function summarizeConfig(c) {
   const total = c.cpu.price + c.gpu.price + c.ram.price + c.ssd.price + c.psu.price + c.cooler.price + c.fans.price + c.box.price + c.mb.price;
-  const score = Math.round(c.gpu.score * 0.55 + c.cpu.score * 0.3 + (Math.min(c.ram.gb, 64) / 64) * 100 * 0.15);
+  const score = computeScore(c.cpu, c.gpu, c.ram);
   const avg = (res) => Math.round(GAMES.reduce((s, g) => s + estimateFps(g, c.cpu, c.gpu, res), 0) / GAMES.length);
   return { total, score, fps1440: avg("1440p"), gpu: c.gpu, cpu: c.cpu, ram: c.ram, vram: c.gpu.vram, pro: c.gpu.pro || c.cpu.pro };
 }
@@ -1097,6 +1126,7 @@ export default function App() {
 
   // Listes filtrées : seules les cartes mères du socket du CPU et la RAM du bon type
   const mbGroups = MB_GROUPS.filter((g) => g.items[0].socket === cpu.socket);
+  // Toutes les fréquences restent visibles ; le diagnostic prévient si elle dépasse la plateforme
   const ramGroups = RAM_GROUPS.filter((g) => g.items[0].type === mb.ddr);
   // Changement de CPU : bascule automatiquement carte mère et RAM compatibles
   const handleCpu = (c) => {
@@ -1116,7 +1146,7 @@ export default function App() {
   const bn = useMemo(() => bottleneck(cpu, gpu), [cpu, gpu]);
   const apps = useMemo(() => appSupport(cpu, gpu, ram), [cpu, gpu, ram]);
   const checks = useMemo(() => compatChecks({ cpu, gpu, ram, mb, psu, cooler, box, fans }), [cpu, gpu, ram, mb, psu, cooler, box, fans]);
-  const globalScore = Math.round(gpu.score * 0.55 + cpu.score * 0.3 + (Math.min(ram.gb, 64) / 64) * 100 * 0.15);
+  const globalScore = computeScore(cpu, gpu, ram);
   const hasBlocker = checks.some((c) => c.lvl === "bad");
   const isPro = gpu.pro || cpu.pro;
   const aiCaps = useMemo(() => aiCreation(cpu, gpu, ram), [cpu, gpu, ram]);
@@ -1193,13 +1223,11 @@ export default function App() {
           </div>
           <button className="budget-go" onClick={applyBudget}>Proposer une config</button>
         </div>
-        {suggestedTotal && (
+        {suggestedTotal && (suggestedTotal.over || suggestedTotal.total < suggestedTotal.budget * 0.8) && (
           <p className={`budget-result ${suggestedTotal.over ? "over" : ""}`}>
             {suggestedTotal.over
-              ? `Budget un peu juste : la machine complète la moins chère revient à ${suggestedTotal.total.toLocaleString("fr-FR")} €. Config affichée ci-dessous.`
-              : suggestedTotal.total < suggestedTotal.budget * 0.8
-                ? `Config à ${suggestedTotal.total.toLocaleString("fr-FR")} €, inutile de dépenser plus pour cet usage, cette machine suffit largement. Ajuste chaque pièce si tu veux.`
-                : `Config à ${suggestedTotal.total.toLocaleString("fr-FR")} € prête ci-dessous, ajuste chaque pièce si tu veux.`}
+              ? `Budget un peu juste : le minimum montable revient à ${suggestedTotal.total.toLocaleString("fr-FR")} €.`
+              : `Machine à ${suggestedTotal.total.toLocaleString("fr-FR")} € : cet usage n'en demande pas plus.`}
           </p>
         )}
       </section>
