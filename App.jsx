@@ -901,9 +901,14 @@ function suggestBuild(budget, profile = "gaming") {
   const fansFor = (gpu) => gpu.watts >= 300 ? ALL_FANS.find((f) => f.id === "f3") : ALL_FANS.find((f) => f.id === "f0");
   const boxFor = (gpu) => gpu.size === "large" ? ALL_CASES.find((c) => c.id === "cmid") : ALL_CASES.find((c) => c.id === "csmall");
 
-  const gpuPool = P.allowPro ? ALL_GPUS : ALL_GPUS.filter((g) => !g.pro);
+  let gpuPool = P.allowPro ? ALL_GPUS : ALL_GPUS.filter((g) => !g.pro);
   let cpuPool = P.allowPro ? ALL_CPUS : ALL_CPUS.filter((c) => !c.pro);
   if (profile === "bureautique") cpuPool = cpuPool.filter((c) => !c.x3d); // le cache 3D est gaming, inutile en bureautique
+  // Au-dessus de 2500 €, on privilégie NVIDIA : dans ce très haut de gamme,
+  // NVIDIA domine (ray tracing, DLSS 4, IA). On ne garde AMD/Intel que s'il
+  // n'existe aucune option NVIDIA (sécurité), sinon on filtre le pool.
+  const isNvidia = (g) => /^(RTX|GTX)/.test(g.name) || /RTX PRO/.test(g.name);
+  if (budget > 2500 && gpuPool.some(isNvidia)) gpuPool = gpuPool.filter(isNvidia);
   let gpu = gpuPool.filter((g) => g.price <= budget * P.gpuW).sort((a, b) => P.gpuKey(b) - P.gpuKey(a))[0] || cheapest(gpuPool);
   const affCpus = cpuPool.filter((c) => c.price <= Math.max(budget * P.cpuW, 60));
   let cpu;
