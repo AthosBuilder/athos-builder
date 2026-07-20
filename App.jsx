@@ -255,6 +255,18 @@ section[id]{scroll-margin-top:16px}
 .field-search::placeholder{color:var(--dim)}
 .field-search:focus-visible{outline:none;border-color:var(--iris);box-shadow:0 0 0 3px rgba(225,29,46,.16)}
 
+
+/* ── Comparateur ── */
+.cmp-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.cmp{width:100%;border-collapse:collapse;font-size:13.5px}
+.cmp th,.cmp td{padding:11px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+.cmp thead th{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted);font-weight:500}
+.cmp tbody th{font-weight:500;color:var(--muted);white-space:nowrap;padding-right:14px}
+.cmp td{font-weight:500}
+.cmp td.win{color:var(--good);font-weight:700}
+.cmp td.win::after{content:" ✓";font-size:11px}
+
 /* ── Encart de partage (bas de page) ── */
 .share-panel{background:linear-gradient(180deg,rgba(225,29,46,.05),transparent),var(--panel)}
 .share-sub{color:var(--muted);font-size:14px;margin-bottom:16px;max-width:54ch;line-height:1.55}
@@ -314,7 +326,7 @@ function Icon({ kind, name }) {
 /* ── GPU (desktop 2019 → 2026) — score 100 = RTX 5090 ──
    watts = conso jeu typique · size: std | large ── */
 const GPU_GROUPS = [
-  { label: "NVIDIA — RTX 50 (2025-26)", items: [
+  { label: "NVIDIA · RTX 50 (2025-26)", items: [
     { id:"5090", name:"RTX 5090", vram:32, score:100, price:3499, watts:575, size:"large" },
     { id:"5080", name:"RTX 5080", vram:16, score:78, price:1199, watts:360, size:"large" },
     { id:"5070ti", name:"RTX 5070 Ti", vram:16, score:70, price:949, watts:300, size:"large" },
@@ -323,7 +335,7 @@ const GPU_GROUPS = [
     { id:"5060", name:"RTX 5060", vram:8, score:38, price:349, watts:145, size:"std" },
     { id:"5050", name:"RTX 5050", vram:8, score:30, price:259, watts:130, size:"std" },
   ]},
-  { label: "NVIDIA — RTX 40 (2022-24)", items: [
+  { label: "NVIDIA · RTX 40 (2022-24)", items: [
     { id:"4090", name:"RTX 4090", vram:24, score:88, price:1950, watts:450, size:"large" },
     { id:"4080s", name:"RTX 4080 Super", vram:16, score:72, price:1000, watts:320, size:"large" },
     { id:"4080", name:"RTX 4080", vram:16, score:70, price:950, watts:320, size:"large" },
@@ -335,7 +347,7 @@ const GPU_GROUPS = [
     { id:"4060ti", name:"RTX 4060 Ti 8 Go", vram:8, score:40, price:330, watts:160, size:"std" },
     { id:"4060", name:"RTX 4060", vram:8, score:35, price:280, watts:115, size:"std" },
   ]},
-  { label: "NVIDIA — RTX 30 (2020-22)", items: [
+  { label: "NVIDIA · RTX 30 (2020-22)", items: [
     { id:"3090ti", name:"RTX 3090 Ti", vram:24, score:65, price:800, watts:450, size:"large" },
     { id:"3090", name:"RTX 3090", vram:24, score:61, price:650, watts:350, size:"large" },
     { id:"3080ti", name:"RTX 3080 Ti", vram:12, score:59, price:520, watts:350, size:"large" },
@@ -346,7 +358,7 @@ const GPU_GROUPS = [
     { id:"3060", name:"RTX 3060 12 Go", vram:12, score:30, price:220, watts:170, size:"std" },
     { id:"3050", name:"RTX 3050", vram:8, score:22, price:180, watts:130, size:"std" },
   ]},
-  { label: "NVIDIA — RTX 20 / GTX 16 (2019-20)", items: [
+  { label: "NVIDIA · RTX 20 / GTX 16 (2019-20)", items: [
     { id:"2080ti", name:"RTX 2080 Ti", vram:11, score:41, price:300, watts:260, size:"std" },
     { id:"2080s", name:"RTX 2080 Super", vram:8, score:36, price:250, watts:250, size:"std" },
     { id:"2080", name:"RTX 2080", vram:8, score:34, price:220, watts:225, size:"std" },
@@ -360,12 +372,12 @@ const GPU_GROUPS = [
     { id:"1650s", name:"GTX 1650 Super", vram:4, score:17, price:100, watts:100, size:"std" },
     { id:"1650", name:"GTX 1650", vram:4, score:14, price:90, watts:75, size:"std" },
   ]},
-  { label: "AMD — RX 9000 (2025-26)", items: [
+  { label: "AMD · RX 9000 (2025-26)", items: [
     { id:"9070xt", name:"RX 9070 XT", vram:16, score:66, price:655, watts:305, size:"large" },
     { id:"9070", name:"RX 9070", vram:16, score:58, price:569, watts:220, size:"std" },
     { id:"9060xt", name:"RX 9060 XT 16 Go", vram:16, score:44, price:419, watts:180, size:"std" },
   ]},
-  { label: "AMD — RX 7000 (2022-24)", items: [
+  { label: "AMD · RX 7000 (2022-24)", items: [
     { id:"7900xtx", name:"RX 7900 XTX", vram:24, score:70, price:900, watts:355, size:"large" },
     { id:"7900xt", name:"RX 7900 XT", vram:20, score:63, price:720, watts:315, size:"large" },
     { id:"7900gre", name:"RX 7900 GRE", vram:16, score:57, price:580, watts:260, size:"std" },
@@ -374,7 +386,7 @@ const GPU_GROUPS = [
     { id:"7600xt", name:"RX 7600 XT", vram:16, score:36, price:320, watts:190, size:"std" },
     { id:"7600", name:"RX 7600", vram:8, score:34, price:260, watts:165, size:"std" },
   ]},
-  { label: "AMD — RX 6000 (2020-22)", items: [
+  { label: "AMD · RX 6000 (2020-22)", items: [
     { id:"6950xt", name:"RX 6950 XT", vram:16, score:61, price:550, watts:335, size:"large" },
     { id:"6900xt", name:"RX 6900 XT", vram:16, score:58, price:480, watts:300, size:"large" },
     { id:"6800xt", name:"RX 6800 XT", vram:16, score:54, price:420, watts:300, size:"large" },
@@ -386,23 +398,23 @@ const GPU_GROUPS = [
     { id:"6600", name:"RX 6600", vram:8, score:28, price:180, watts:132, size:"std" },
     { id:"6500xt", name:"RX 6500 XT", vram:4, score:16, price:120, watts:107, size:"std" },
   ]},
-  { label: "AMD — RX 5000 (2019-20)", items: [
+  { label: "AMD · RX 5000 (2019-20)", items: [
     { id:"5700xt", name:"RX 5700 XT", vram:8, score:30, price:170, watts:225, size:"std" },
     { id:"5700", name:"RX 5700", vram:8, score:27, price:150, watts:180, size:"std" },
     { id:"5600xt", name:"RX 5600 XT", vram:6, score:24, price:130, watts:150, size:"std" },
     { id:"5500xt", name:"RX 5500 XT 8 Go", vram:8, score:18, price:100, watts:130, size:"std" },
   ]},
-  { label: "NVIDIA — RTX PRO / workstation", items: [
+  { label: "NVIDIA · RTX PRO / workstation", items: [
     { id:"pro6000b", name:"RTX PRO 6000 Blackwell", vram:96, score:96, price:8500, watts:600, size:"large", pro:true, compute:100 },
     { id:"rtx6000ada", name:"RTX 6000 Ada", vram:48, score:72, price:6800, watts:300, size:"large", pro:true, compute:80 },
     { id:"rtx5000ada", name:"RTX 5000 Ada", vram:32, score:62, price:4000, watts:250, size:"large", pro:true, compute:64 },
     { id:"rtx4500ada", name:"RTX 4500 Ada", vram:24, score:50, price:2400, watts:210, size:"std", pro:true, compute:50 },
   ]},
-  { label: "AMD — Radeon PRO / workstation", items: [
+  { label: "AMD · Radeon PRO / workstation", items: [
     { id:"w7900", name:"Radeon PRO W7900", vram:48, score:64, price:3500, watts:295, size:"large", pro:true, compute:62 },
     { id:"w7800", name:"Radeon PRO W7800", vram:32, score:56, price:2500, watts:260, size:"std", pro:true, compute:52 },
   ]},
-  { label: "Intel — Arc (2022-25)", items: [
+  { label: "Intel · Arc (2022-25)", items: [
     { id:"b580", name:"Arc B580", vram:12, score:36, price:319, watts:190, size:"std" },
     { id:"b570", name:"Arc B570", vram:10, score:32, price:269, watts:150, size:"std" },
     { id:"a770", name:"Arc A770 16 Go", vram:16, score:31, price:250, watts:225, size:"std" },
@@ -415,7 +427,7 @@ const GPU_GROUPS = [
 /* ── CPU (desktop 2019 → 2026) — score 100 = 9800X3D ──
    ddr: type mémoire supporté · tdp = charge réelle (dimensionnement ventirad) ── */
 const CPU_GROUPS = [
-  { label: "AMD — Ryzen 9000 (2024-25)", items: [
+  { label: "AMD · Ryzen 9000 (2024-25)", items: [
     { id:"9950x3d", name:"Ryzen 9 9950X3D", cores:16, score:98, price:780, ddr:"DDR5", tdp:200, socket:"AM5" },
     { id:"9800x3d", name:"Ryzen 7 9800X3D", cores:8, score:100, price:529, ddr:"DDR5", tdp:160, socket:"AM5" },
     { id:"9950x", name:"Ryzen 9 9950X", cores:16, score:82, price:650, ddr:"DDR5", tdp:230, socket:"AM5" },
@@ -423,7 +435,7 @@ const CPU_GROUPS = [
     { id:"9700x", name:"Ryzen 7 9700X", cores:8, score:77, price:360, ddr:"DDR5", tdp:110, socket:"AM5" },
     { id:"9600x", name:"Ryzen 5 9600X", cores:6, score:74, price:280, ddr:"DDR5", tdp:110, socket:"AM5" },
   ]},
-  { label: "AMD — Ryzen 7000 (2022-23)", items: [
+  { label: "AMD · Ryzen 7000 (2022-23)", items: [
     { id:"7950x3d", name:"Ryzen 9 7950X3D", cores:16, score:90, price:620, ddr:"DDR5", tdp:162, socket:"AM5" },
     { id:"7800x3d", name:"Ryzen 7 7800X3D", cores:8, score:92, price:420, ddr:"DDR5", tdp:120, socket:"AM5" },
     { id:"7950x", name:"Ryzen 9 7950X", cores:16, score:78, price:520, ddr:"DDR5", tdp:230, socket:"AM5" },
@@ -433,7 +445,7 @@ const CPU_GROUPS = [
     { id:"7600x", name:"Ryzen 5 7600X", cores:6, score:69, price:230, ddr:"DDR5", tdp:142, socket:"AM5" },
     { id:"7600", name:"Ryzen 5 7600", cores:6, score:68, price:210, ddr:"DDR5", tdp:88, socket:"AM5" },
   ]},
-  { label: "AMD — Ryzen 5000 (2020-22)", items: [
+  { label: "AMD · Ryzen 5000 (2020-22)", items: [
     { id:"5800x3d", name:"Ryzen 7 5800X3D", cores:8, score:72, price:300, ddr:"DDR4", tdp:105, socket:"AM4" },
     { id:"5950x", name:"Ryzen 9 5950X", cores:16, score:62, price:340, ddr:"DDR4", tdp:142, socket:"AM4" },
     { id:"5900x", name:"Ryzen 9 5900X", cores:12, score:60, price:260, ddr:"DDR4", tdp:142, socket:"AM4" },
@@ -443,25 +455,25 @@ const CPU_GROUPS = [
     { id:"5600", name:"Ryzen 5 5600", cores:6, score:52, price:110, ddr:"DDR4", tdp:76, socket:"AM4" },
     { id:"5500", name:"Ryzen 5 5500", cores:6, score:45, price:90, ddr:"DDR4", tdp:65, socket:"AM4" },
   ]},
-  { label: "AMD — Ryzen 3000 (2019)", items: [
+  { label: "AMD · Ryzen 3000 (2019)", items: [
     { id:"3950x", name:"Ryzen 9 3950X", cores:16, score:48, price:250, ddr:"DDR4", tdp:142, socket:"AM4" },
     { id:"3900x", name:"Ryzen 9 3900X", cores:12, score:47, price:180, ddr:"DDR4", tdp:142, socket:"AM4" },
     { id:"3700x", name:"Ryzen 7 3700X", cores:8, score:44, price:120, ddr:"DDR4", tdp:88, socket:"AM4" },
     { id:"3600", name:"Ryzen 5 3600", cores:6, score:40, price:80, ddr:"DDR4", tdp:88, socket:"AM4" },
   ]},
-  { label: "AMD — Threadripper (workstation)", items: [
+  { label: "AMD · Threadripper (workstation)", items: [
     { id:"tr7980x", name:"Ryzen Threadripper 7980X", cores:64, score:80, price:5200, ddr:"DDR5", tdp:350, socket:"sTR5", pro:true },
     { id:"tr7970x", name:"Ryzen Threadripper 7970X", cores:32, score:78, price:2900, ddr:"DDR5", tdp:350, socket:"sTR5", pro:true },
     { id:"tr7960x", name:"Ryzen Threadripper 7960X", cores:24, score:76, price:1500, ddr:"DDR5", tdp:350, socket:"sTR5", pro:true },
   ]},
-  { label: "Intel — Core Ultra 200 (2024-26)", items: [
+  { label: "Intel · Core Ultra 200 (2024-26)", items: [
     { id:"270kplus", name:"Core Ultra 7 270K Plus", cores:24, score:86, price:359, ddr:"DDR5", tdp:250, socket:"LGA1851" },
     { id:"250kplus", name:"Core Ultra 5 250K Plus", cores:18, score:79, price:234, ddr:"DDR5", tdp:159, socket:"LGA1851" },
     { id:"285k", name:"Core Ultra 9 285K", cores:24, score:84, price:589, ddr:"DDR5", tdp:250, socket:"LGA1851" },
     { id:"265k", name:"Core Ultra 7 265K", cores:20, score:80, price:400, ddr:"DDR5", tdp:250, socket:"LGA1851" },
     { id:"245k", name:"Core Ultra 5 245K", cores:14, score:75, price:300, ddr:"DDR5", tdp:159, socket:"LGA1851" },
   ]},
-  { label: "Intel — 13e / 14e gen (2022-24)", items: [
+  { label: "Intel · 13e / 14e gen (2022-24)", items: [
     { id:"14900k", name:"i9-14900K", cores:24, score:87, price:480, ddr:"DDR4/DDR5", tdp:253, socket:"LGA1700" },
     { id:"14700k", name:"i7-14700K", cores:20, score:82, price:380, ddr:"DDR4/DDR5", tdp:253, socket:"LGA1700" },
     { id:"14600k", name:"i5-14600K", cores:14, score:76, price:280, ddr:"DDR4/DDR5", tdp:181, socket:"LGA1700" },
@@ -471,7 +483,7 @@ const CPU_GROUPS = [
     { id:"13600k", name:"i5-13600K", cores:14, score:74, price:250, ddr:"DDR4/DDR5", tdp:181, socket:"LGA1700" },
     { id:"13400f", name:"i5-13400F", cores:10, score:64, price:170, ddr:"DDR4/DDR5", tdp:148, socket:"LGA1700" },
   ]},
-  { label: "Intel — 11e / 12e gen (2021-22)", items: [
+  { label: "Intel · 11e / 12e gen (2021-22)", items: [
     { id:"12900k", name:"i9-12900K", cores:16, score:75, price:280, ddr:"DDR4/DDR5", tdp:241, socket:"LGA1700" },
     { id:"12700k", name:"i7-12700K", cores:12, score:70, price:220, ddr:"DDR4/DDR5", tdp:190, socket:"LGA1700" },
     { id:"12600k", name:"i5-12600K", cores:10, score:65, price:170, ddr:"DDR4/DDR5", tdp:150, socket:"LGA1700" },
@@ -480,7 +492,7 @@ const CPU_GROUPS = [
     { id:"11700k", name:"i7-11700K", cores:8, score:52, price:150, ddr:"DDR4", tdp:225, socket:"LGA1200" },
     { id:"11400f", name:"i5-11400F", cores:6, score:45, price:90, ddr:"DDR4", tdp:154, socket:"LGA1200" },
   ]},
-  { label: "Intel — 9e / 10e gen (2019-20)", items: [
+  { label: "Intel · 9e / 10e gen (2019-20)", items: [
     { id:"10900k", name:"i9-10900K", cores:10, score:52, price:170, ddr:"DDR4", tdp:250, socket:"LGA1200" },
     { id:"10700k", name:"i7-10700K", cores:8, score:48, price:130, ddr:"DDR4", tdp:229, socket:"LGA1200" },
     { id:"10400f", name:"i5-10400F", cores:6, score:40, price:75, ddr:"DDR4", tdp:134, socket:"LGA1200" },
@@ -550,11 +562,11 @@ const FAN_GROUPS = [
   ]},
 ];
 const MB_GROUPS = [
-  { label: "sTR5 — Threadripper (DDR5)", items: [
+  { label: "sTR5 · Threadripper (DDR5)", items: [
     { id:"trx50", name:"Carte mère TRX50 (sTR5)", socket:"sTR5", ddr:"DDR5", price:750 },
     { id:"wrx90", name:"Carte mère WRX90 (sTR5)", socket:"sTR5", ddr:"DDR5", price:1150 },
   ]},
-  { label: "AM5 — Ryzen 7000/9000 (DDR5)", items: [
+  { label: "AM5 · Ryzen 7000/9000 (DDR5)", items: [
     { id:"x870e", name:"Carte mère X870E (AM5)", socket:"AM5", ddr:"DDR5", price:330 },
     { id:"x870", name:"Carte mère X870 (AM5)", socket:"AM5", ddr:"DDR5", price:250 },
     { id:"x670e", name:"Carte mère X670E (AM5)", socket:"AM5", ddr:"DDR5", price:280 },
@@ -565,7 +577,7 @@ const MB_GROUPS = [
     { id:"b840", name:"Carte mère B840 (AM5)", socket:"AM5", ddr:"DDR5", price:120 },
     { id:"a620", name:"Carte mère A620 (AM5)", socket:"AM5", ddr:"DDR5", price:95 },
   ]},
-  { label: "AM4 — Ryzen 3000/5000 (DDR4)", items: [
+  { label: "AM4 · Ryzen 3000/5000 (DDR4)", items: [
     { id:"x570s", name:"Carte mère X570S (AM4)", socket:"AM4", ddr:"DDR4", price:160 },
     { id:"x570", name:"Carte mère X570 (AM4)", socket:"AM4", ddr:"DDR4", price:140 },
     { id:"b550", name:"Carte mère B550 (AM4)", socket:"AM4", ddr:"DDR4", price:100 },
@@ -573,13 +585,13 @@ const MB_GROUPS = [
     { id:"b450", name:"Carte mère B450 (AM4)", socket:"AM4", ddr:"DDR4", price:70 },
     { id:"a320", name:"Carte mère A320 (AM4)", socket:"AM4", ddr:"DDR4", price:45 },
   ]},
-  { label: "LGA1851 — Core Ultra 200 (DDR5)", items: [
+  { label: "LGA1851 · Core Ultra 200 (DDR5)", items: [
     { id:"z890", name:"Carte mère Z890 (LGA1851)", socket:"LGA1851", ddr:"DDR5", price:260 },
     { id:"b860", name:"Carte mère B860 (LGA1851)", socket:"LGA1851", ddr:"DDR5", price:160 },
     { id:"h810", name:"Carte mère H810 (LGA1851)", socket:"LGA1851", ddr:"DDR5", price:95 },
     { id:"w880", name:"Carte mère W880 station de travail (LGA1851)", socket:"LGA1851", ddr:"DDR5", price:340 },
   ]},
-  { label: "LGA1700 — Intel 12-14e gen", items: [
+  { label: "LGA1700 · Intel 12-14e gen", items: [
     { id:"z790d5", name:"Carte mère Z790 DDR5 (LGA1700)", socket:"LGA1700", ddr:"DDR5", price:230 },
     { id:"z790d4", name:"Carte mère Z790 DDR4 (LGA1700)", socket:"LGA1700", ddr:"DDR4", price:190 },
     { id:"z690d5", name:"Carte mère Z690 DDR5 (LGA1700)", socket:"LGA1700", ddr:"DDR5", price:180 },
@@ -591,7 +603,7 @@ const MB_GROUPS = [
     { id:"h670", name:"Carte mère H670 DDR4 (LGA1700)", socket:"LGA1700", ddr:"DDR4", price:100 },
     { id:"h610", name:"Carte mère H610 DDR4 (LGA1700)", socket:"LGA1700", ddr:"DDR4", price:75 },
   ]},
-  { label: "LGA1200 — Intel 10-11e gen (DDR4)", items: [
+  { label: "LGA1200 · Intel 10-11e gen (DDR4)", items: [
     { id:"z590", name:"Carte mère Z590 (LGA1200)", socket:"LGA1200", ddr:"DDR4", price:120 },
     { id:"z490", name:"Carte mère Z490 (LGA1200)", socket:"LGA1200", ddr:"DDR4", price:100 },
     { id:"b560", name:"Carte mère B560 (LGA1200)", socket:"LGA1200", ddr:"DDR4", price:80 },
@@ -599,7 +611,7 @@ const MB_GROUPS = [
     { id:"h510", name:"Carte mère H510 (LGA1200)", socket:"LGA1200", ddr:"DDR4", price:55 },
     { id:"h410", name:"Carte mère H410 (LGA1200)", socket:"LGA1200", ddr:"DDR4", price:45 },
   ]},
-  { label: "LGA1151 — Intel 9e gen (DDR4, occasion)", items: [
+  { label: "LGA1151 · Intel 9e gen (DDR4, occasion)", items: [
     { id:"z390", name:"Carte mère Z390 (LGA1151)", socket:"LGA1151", ddr:"DDR4", price:100 },
     { id:"z370", name:"Carte mère Z370 (LGA1151)", socket:"LGA1151", ddr:"DDR4", price:80 },
     { id:"b365", name:"Carte mère B365 (LGA1151)", socket:"LGA1151", ddr:"DDR4", price:65 },
@@ -709,16 +721,15 @@ function compatChecks({ cpu, gpu, ram, mb, psu, cooler, box, fans }) {
   checks.push(cpu.socket === mb.socket
     ? { lvl: "ok", msg: `Le ${cpu.name} (socket ${cpu.socket}) se monte sur cette carte mère.` }
     : { lvl: "bad", msg: `Incompatible : le ${cpu.name} est en socket ${cpu.socket}, cette carte mère est en ${mb.socket}. Change de carte mère ou de CPU.` });
-  // 2. RAM ↔ carte mère
-  const wsSockets = ["sTR5"];
-  if (ram.ws && !wsSockets.includes(mb.socket)) {
-    checks.push({ lvl: "bad", msg: `${ram.gb} Go, c'est une capacité de station de travail : elle nécessite une plateforme Threadripper (sTR5). Cette carte mère ne la supporte pas.` });
-  } else if (ram.gb >= 128 && !["sTR5","AM5","LGA1851","LGA1700"].includes(mb.socket)) {
-    checks.push({ lvl: "bad", msg: `${ram.gb} Go dépasse ce que cette plateforme accepte. Passe sur une carte mère récente (AM5, LGA1700/1851) ou workstation.` });
+  // 2. RAM ↔ carte mère : type mémoire, puis capacité max par plateforme
+  const RAM_MAX = { sTR5: 1024, AM5: 256, LGA1851: 256, LGA1700: 192, AM4: 128, LGA1200: 128, LGA1151: 128 };
+  const maxRam = RAM_MAX[mb.socket] || 128;
+  if (ram.type !== mb.ddr) {
+    checks.push({ lvl: "bad", msg: `Incompatible : cette carte mère accepte uniquement de la ${mb.ddr}, pas de la ${ram.type}.` });
+  } else if (ram.gb > maxRam) {
+    checks.push({ lvl: "bad", msg: `${ram.gb} Go dépasse la limite de la plateforme ${mb.socket} (${maxRam} Go maximum). Passe sur une carte mère qui accepte cette capacité${mb.socket !== "sTR5" ? ", ou sur une plateforme Threadripper (sTR5) pour aller plus haut" : ""}.` });
   } else {
-    checks.push(ram.type === mb.ddr
-      ? { lvl: "ok", msg: `Mémoire ${ram.speed || ram.type} compatible avec cette carte mère.` }
-      : { lvl: "bad", msg: `Incompatible : cette carte mère accepte uniquement de la ${mb.ddr}, pas de la ${ram.type}.` });
+    checks.push({ lvl: "ok", msg: `Mémoire ${ram.speed || ram.type} (${ram.gb} Go) compatible avec cette carte mère (max ${maxRam} Go sur ${mb.socket}).` });
   }
   // 2. Alimentation
   const draw = gpu.watts + cpu.tdp + 75; // + carte mère, SSD, ventilos
@@ -762,7 +773,7 @@ function PcView({ cpu, gpu, ram, ssd, cooler, fans, box, onPick }) {
   const frontFans = Math.min(fans.flow + 1, 3);
   const ln = "#2C2C42", fill = "#0E0E16", metal = "#191926";
   return (
-    <svg viewBox={`0 0 ${W + 20} ${H + 20}`} width="100%" style={{ maxWidth: 320, display: "block", margin: "0 auto" }} role="img" aria-label="Schéma interactif de la configuration — touche un composant pour le modifier">
+    <svg viewBox={`0 0 ${W + 20} ${H + 20}`} width="100%" style={{ maxWidth: 320, display: "block", margin: "0 auto" }} role="img" aria-label="Schéma interactif de la configuration, touche un composant pour le modifier">
       {/* Boîtier (cliquable) */}
       <Hot kind="box" label="boîtier" onPick={onPick}>
         <rect x="10" y="10" width={W} height={H} rx="10" fill={fill} stroke={ln} strokeWidth="2"/>
@@ -880,7 +891,7 @@ function LegalPage({ onBack }) {
       <button className="back" onClick={onBack}>← Retour au simulateur</button>
       <h1>Mentions légales</h1>
       <h2>Éditeur du site</h2>
-      <p><b>Athos Builder</b> — athosbuilder.fr</p>
+      <p><b>Athos Builder</b> · athosbuilder.fr</p>
       <p>[TON PRÉNOM ET NOM]<br/>Statut : entrepreneur individuel (micro-entreprise)<br/>SIREN : [TON NUMÉRO SIREN]<br/>Contact : [TON EMAIL]</p>
       <h2>Hébergement</h2>
       <p>[Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, USA — ou ton hébergeur réel]</p>
@@ -1028,6 +1039,14 @@ function readConfigFromUrl() {
   } catch { return null; }
 }
 
+// Résumé chiffré d'une config, pour le comparateur
+function summarizeConfig(c) {
+  const total = c.cpu.price + c.gpu.price + c.ram.price + c.ssd.price + c.psu.price + c.cooler.price + c.fans.price + c.box.price + c.mb.price;
+  const score = Math.round(c.gpu.score * 0.55 + c.cpu.score * 0.3 + (Math.min(c.ram.gb, 64) / 64) * 100 * 0.15);
+  const avg = (res) => Math.round(GAMES.reduce((s, g) => s + estimateFps(g, c.cpu, c.gpu, res), 0) / GAMES.length);
+  return { total, score, fps1440: avg("1440p"), gpu: c.gpu, cpu: c.cpu, ram: c.ram, vram: c.gpu.vram, pro: c.gpu.pro || c.cpu.pro };
+}
+
 export default function App() {
   const [page, setPage] = useState("sim");
   const [editPart, setEditPart] = useState(null);
@@ -1101,6 +1120,9 @@ export default function App() {
   const hasBlocker = checks.some((c) => c.lvl === "bad");
   const isPro = gpu.pro || cpu.pro;
   const aiCaps = useMemo(() => aiCreation(cpu, gpu, ram), [cpu, gpu, ram]);
+  const [compareA, setCompareA] = useState(null); // config figée pour comparaison
+  const liveConfig = { cpu, gpu, ram, ssd, psu, cooler, fans, box, mb, res };
+  const saveForCompare = () => setCompareA(summarizeConfig(liveConfig));
   // Ordre des usages selon le profil
   const appOrder = { gaming: ["Streaming","Bureautique"], workstation: ["3D","IA","Dev","Montage"], bureautique: ["Bureautique"] };
   const orderedApps = [...apps].sort((a, b) => {
@@ -1147,7 +1169,7 @@ export default function App() {
 
       <nav className="toc" aria-label="Sommaire">
         <a href="#s-budget">Budget</a><a href="#s-parts">Composants</a><a href="#s-compat">Compatibilité</a>
-        <a href="#s-perf">{isPro ? "Calcul" : "Performances"}</a><a href="#s-ai">IA</a><a href="#s-uses">Usages</a>
+        <a href="#s-perf">{isPro ? "Calcul" : "Performances"}</a><a href="#s-ai">IA</a><a href="#s-uses">Usages</a><a href="#s-compare">Comparer</a>
       </nav>
 
       <section className="panel prof-panel">
@@ -1176,8 +1198,8 @@ export default function App() {
             {suggestedTotal.over
               ? `Budget un peu juste : la machine complète la moins chère revient à ${suggestedTotal.total.toLocaleString("fr-FR")} €. Config affichée ci-dessous.`
               : suggestedTotal.total < suggestedTotal.budget * 0.8
-                ? `Config à ${suggestedTotal.total.toLocaleString("fr-FR")} € — inutile de dépenser plus pour cet usage, cette machine suffit largement. Ajuste chaque pièce si tu veux.`
-                : `Config à ${suggestedTotal.total.toLocaleString("fr-FR")} € prête ci-dessous — ajuste chaque pièce si tu veux.`}
+                ? `Config à ${suggestedTotal.total.toLocaleString("fr-FR")} €, inutile de dépenser plus pour cet usage, cette machine suffit largement. Ajuste chaque pièce si tu veux.`
+                : `Config à ${suggestedTotal.total.toLocaleString("fr-FR")} € prête ci-dessous, ajuste chaque pièce si tu veux.`}
           </p>
         )}
       </section>
@@ -1212,7 +1234,7 @@ export default function App() {
           ))}
         </ul>
         <div className="pcview-wrap">
-          <span className="pick-tag" style={{ textAlign: "center", marginBottom: 8 }}>APERÇU DU MONTAGE — touche un composant pour le modifier</span>
+          <span className="pick-tag" style={{ textAlign: "center", marginBottom: 8 }}>APERÇU DU MONTAGE · touche un composant pour le modifier</span>
           <PcView cpu={cpu} gpu={gpu} ram={ram} ssd={ssd} cooler={cooler} fans={fans} box={box} onPick={setEditPart} />
           {editPart && (
             <div className="edit-pop">
@@ -1265,11 +1287,11 @@ export default function App() {
        {isPro ? (
         <>
           <h2 className="panel-title">Puissance de calcul</h2>
-          <p className="diag-msg" style={{marginBottom:14}}>Cette configuration vise la création et le calcul, pas le jeu — les FPS n'ont ici pas de sens. Ce qui compte : la VRAM et la puissance de calcul du GPU, les cœurs du CPU.</p>
+          <p className="diag-msg" style={{marginBottom:14}}>Cette configuration vise la création et le calcul, pas le jeu, les FPS n'ont ici pas de sens. Ce qui compte : la VRAM et la puissance de calcul du GPU, les cœurs du CPU.</p>
           <ul className="compat">
-            <li className="c-ok"><span className="dot">▤</span><span><b>{gpu.vram} Go de VRAM</b> — {gpu.vram>=48?"gros modèles IA, scènes 3D très lourdes, montage 8K":gpu.vram>=24?"IA, rendu 3D et montage 4K confortables":"suffisant pour la 3D et le montage courants"}.</span></li>
-            {gpu.compute && <li className="c-ok"><span className="dot">⚡</span><span><b>Indice de calcul {gpu.compute}/100</b> — rendu, simulation et entraînement IA.</span></li>}
-            <li className="c-ok"><span className="dot">◇</span><span><b>{cpu.cores} cœurs</b> — {cpu.cores>=24?"rendu multi-cœurs, compilation et virtualisation lourdes":cpu.cores>=12?"multitâche pro et rendu confortables":"bureautique et création légère"}.</span></li>
+            <li className="c-ok"><span className="dot">▤</span><span><b>{gpu.vram} Go de VRAM</b> : {gpu.vram>=48?"gros modèles IA, scènes 3D très lourdes, montage 8K":gpu.vram>=24?"IA, rendu 3D et montage 4K confortables":"suffisant pour la 3D et le montage courants"}.</span></li>
+            {gpu.compute && <li className="c-ok"><span className="dot">⚡</span><span><b>Indice de calcul {gpu.compute}/100</b> : rendu, simulation et entraînement IA.</span></li>}
+            <li className="c-ok"><span className="dot">◇</span><span><b>{cpu.cores} cœurs</b> : {cpu.cores>=24?"rendu multi-cœurs, compilation et virtualisation lourdes":cpu.cores>=12?"multitâche pro et rendu confortables":"bureautique et création légère"}.</span></li>
           </ul>
         </>
        ) : (
@@ -1310,7 +1332,7 @@ export default function App() {
           {aiCaps.map((c) => (
             <li key={c.name} className={c.lvl === "bad" ? "c-bad" : c.lvl === "ok" ? "c-warn" : "c-ok"}>
               <span className="dot">{c.lvl === "top" ? "★" : c.lvl === "good" ? "✓" : c.lvl === "ok" ? "~" : "✕"}</span>
-              <span><b>{c.name}</b> — {c.txt}</span>
+              <span><b>{c.name}</b> : {c.txt}</span>
             </li>
           ))}
         </ul>
@@ -1332,11 +1354,57 @@ export default function App() {
         </ul>
       </section>
 
+      <section className="panel" id="s-compare">
+        <h2 className="panel-title">Comparer deux configs</h2>
+        {!compareA ? (
+          <>
+            <p className="share-sub">Enregistre ta config actuelle, puis modifie tes composants : on affichera les deux côte à côte pour t'aider à choisir.</p>
+            <button className="share-btn" onClick={saveForCompare}>⊕ Enregistrer cette config comme Config A</button>
+          </>
+        ) : (() => {
+          const B = summarizeConfig(liveConfig);
+          const A = compareA;
+          const row = (label, va, vb, better, fmt) => {
+            const wa = better === "low" ? va <= vb : va >= vb;
+            const wb = better === "low" ? vb <= va : vb >= va;
+            return (
+              <tr>
+                <th>{label}</th>
+                <td className={wa && va !== vb ? "win" : ""}>{fmt(va)}</td>
+                <td className={wb && va !== vb ? "win" : ""}>{fmt(vb)}</td>
+              </tr>
+            );
+          };
+          const euro = (n) => n.toLocaleString("fr-FR") + " €";
+          return (
+            <>
+              <p className="share-sub">Config A = enregistrée · Config B = ta config actuelle. En vert, l'avantage de chaque ligne.</p>
+              <div className="cmp-wrap">
+                <table className="cmp">
+                  <thead><tr><th></th><th>Config A</th><th>Config B</th></tr></thead>
+                  <tbody>
+                    <tr><th>Carte graphique</th><td>{A.gpu.name}</td><td>{B.gpu.name}</td></tr>
+                    <tr><th>Processeur</th><td>{A.cpu.name}</td><td>{B.cpu.name}</td></tr>
+                    {row("Prix total", A.total, B.total, "low", euro)}
+                    {row("Puissance /100", A.score, B.score, "high", (v) => v)}
+                    {(A.pro || B.pro)
+                      ? <tr><th>FPS moyens 1440p</th><td>{A.pro ? "n/a" : A.fps1440}</td><td>{B.pro ? "n/a" : B.fps1440}</td></tr>
+                      : row("FPS moyens 1440p", A.fps1440, B.fps1440, "high", (v) => v)}
+                    {row("VRAM", A.vram, B.vram, "high", (v) => v + " Go")}
+                  </tbody>
+                </table>
+              </div>
+              <button className="share-btn" style={{ marginTop: 14 }} onClick={() => setCompareA(null)}>↺ Réinitialiser la comparaison</button>
+            </>
+          );
+        })()}
+      </section>
+
       <section className="panel share-panel">
         <h2 className="panel-title">Partager ta config</h2>
         <p className="share-sub">Ta configuration est prête ? Copie le lien : la personne qui l'ouvre retrouve exactement la même machine, prête à l'écran.</p>
         <button className="share-btn" onClick={shareConfig}>
-          {shared ? "✓ Lien copié — colle-le où tu veux" : "⧉ Partager cette config par lien"}
+          {shared ? "✓ Lien copié, colle-le où tu veux" : "⧉ Partager cette config par lien"}
         </button>
       </section>
 
