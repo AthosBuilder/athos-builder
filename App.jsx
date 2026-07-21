@@ -226,7 +226,16 @@ section[id]{scroll-margin-top:16px}
   font:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:transform .12s,filter .15s;white-space:nowrap}
 .budget-go:hover{transform:translateY(-1px);filter:brightness(1.08)}
 .budget-go:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
-.budget-result{margin-top:14px;font-size:13.5px;color:var(--good);line-height:1.5}
+
+.budget-go.done{background:var(--good);color:#0A0A0F}
+.budget-out{margin-top:16px}
+.budget-figures{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-end}
+.bf{display:flex;flex-direction:column;gap:2px}
+.bf-num{font-size:22px;font-weight:700;color:var(--text)}
+.bf-max{font-size:13px;color:var(--dim);font-weight:500}
+.bf-lbl{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted)}
+.budget-result{margin-top:12px;font-size:13.5px;color:var(--good);line-height:1.5}
 .budget-result.over{color:var(--ok)}
 
 /* ── Effet d'ouverture « TV qui s'allume » ── */
@@ -1112,6 +1121,7 @@ export default function App() {
   const [budget, setBudget] = useState("1000");
   const [profile, setProfile] = useState("gaming");
   const [suggestedTotal, setSuggestedTotal] = useState(null);
+  const [justGenerated, setJustGenerated] = useState(false);
 
   const applyBudget = () => {
     const b = parseInt(budget, 10);
@@ -1119,7 +1129,10 @@ export default function App() {
     const r = suggestBuild(b, profile);
     setCpu(r.cpu); setGpu(r.gpu); setMb(r.mb); setRam(r.ram); setSsd(r.ssd);
     setPsu(r.psu); setCooler(r.cooler); setFans(r.fans); setBox(r.box);
-    setSuggestedTotal({ total: r.total, over: r.over, budget: b });
+    const sc = computeScore(r.cpu, r.gpu, r.ram);
+    setSuggestedTotal({ total: r.total, over: r.over, budget: b, score: sc });
+    setJustGenerated(true);
+    setTimeout(() => setJustGenerated(false), 2000);
   };
 
   // Charger une config partagée via l'URL, une seule fois au démarrage
@@ -1239,14 +1252,24 @@ export default function App() {
               onChange={(e) => setBudget(e.target.value)} aria-label="Budget en euros" />
             <span className="budget-cur">€</span>
           </div>
-          <button className="budget-go" onClick={applyBudget}>Proposer une config</button>
+          <button className={`budget-go ${justGenerated ? "done" : ""}`} onClick={applyBudget}>
+            {justGenerated ? "✓ Config générée" : "Proposer une config"}
+          </button>
         </div>
-        {suggestedTotal && (suggestedTotal.over || suggestedTotal.total < suggestedTotal.budget * 0.8) && (
-          <p className={`budget-result ${suggestedTotal.over ? "over" : ""}`}>
-            {suggestedTotal.over
-              ? `Budget un peu juste : le minimum montable revient à ${suggestedTotal.total.toLocaleString("fr-FR")} €.`
-              : `Machine à ${suggestedTotal.total.toLocaleString("fr-FR")} € : cet usage n'en demande pas plus.`}
-          </p>
+        {suggestedTotal && (
+          <div className="budget-out">
+            <div className="budget-figures">
+              <span className="bf"><span className="bf-num mono">{suggestedTotal.score}<span className="bf-max">/100</span></span><span className="bf-lbl">puissance</span></span>
+              <span className="bf"><span className="bf-num mono">{suggestedTotal.total.toLocaleString("fr-FR")} €</span><span className="bf-lbl">total</span></span>
+            </div>
+            {(suggestedTotal.over || suggestedTotal.total < suggestedTotal.budget * 0.8) && (
+              <p className={`budget-result ${suggestedTotal.over ? "over" : ""}`}>
+                {suggestedTotal.over
+                  ? `Budget un peu juste : le minimum montable revient à ${suggestedTotal.total.toLocaleString("fr-FR")} €.`
+                  : `Cet usage n'en demande pas plus.`}
+              </p>
+            )}
+          </div>
         )}
       </section>
 
