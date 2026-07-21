@@ -183,6 +183,7 @@ option{color:var(--text);background:var(--panel2);font-family:'Inter',sans-serif
 .legal h1{font-family:'Bricolage Grotesque',sans-serif;font-size:32px;font-weight:800;letter-spacing:-.02em;margin:18px 0 10px}
 .legal h2{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--cyan);margin:24px 0 8px}
 .legal p{color:var(--text);font-size:14.5px;max-width:64ch}
+.legal a{color:var(--accent);text-decoration:underline}
 .back{background:var(--panel);border:1px solid var(--line);color:var(--text);font:inherit;font-size:13px;
   padding:9px 15px;border-radius:10px;cursor:pointer;transition:border-color .15s}
 .back:hover{border-color:var(--dim)}
@@ -930,7 +931,7 @@ function LegalPage({ onBack }) {
       <h1>Mentions légales</h1>
       <h2>Éditeur du site</h2>
       <p><b>Athos Builder</b> · athosbuilder.fr</p>
-      <p>[TON PRÉNOM ET NOM]<br/>Statut : entrepreneur individuel (micro-entreprise)<br/>SIREN : [TON NUMÉRO SIREN]<br/>Contact : [TON EMAIL]</p>
+      <p>Site édité à titre personnel. Contact : <a href="mailto:athosbuilder.fr@gmail.com">athosbuilder.fr@gmail.com</a></p>
       <h2>Hébergement</h2>
       <p>[Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, USA — ou ton hébergeur réel]</p>
       <h2>Liens d'affiliation</h2>
@@ -952,7 +953,7 @@ function PrivacyPage({ onBack }) {
       <h2>Liens externes</h2>
       <p>Lorsque vous cliquez sur « Voir le prix », vous quittez ce site pour celui d'un marchand. Leurs politiques de confidentialité s'appliquent alors. Les liens s'ouvrent dans un onglet isolé (noopener) : le site marchand ne peut pas interagir avec cette page.</p>
       <h2>Vos droits (RGPD)</h2>
-      <p>Aucune donnée n'étant collectée ni stockée par ce site, il n'y a aucune donnée à consulter, rectifier ou supprimer. Pour toute question : [TON EMAIL].</p>
+      <p>Aucune donnée n'étant collectée ni stockée par ce site, il n'y a aucune donnée à consulter, rectifier ou supprimer. Pour toute question : <a href="mailto:athosbuilder.fr@gmail.com">athosbuilder.fr@gmail.com</a>.</p>
     </div>
   );
 }
