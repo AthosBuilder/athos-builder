@@ -11,6 +11,12 @@ const css = `
   --grad:linear-gradient(100deg,#E11D2E 0%,#F0322F 50%,#FF5A3C 100%);
   --grad-brand:linear-gradient(100deg,#E11D2E 0%,#F0322F 50%,#FF5A3C 100%);
 }
+.app.dark{
+  --bg:#120C0D; --panel:#1B1315; --panel2:#221A1C; --line:#3A2A2D;
+  --text:#F3EBEC; --muted:#A78F92; --dim:#7A6467;
+  --good:#4FD196; --ok:#E0AC3A; --bad:#FF5A6E;
+}
+.app{transition:background-color .3s ease,color .3s ease}
 *{box-sizing:border-box;margin:0}
 html{-webkit-text-size-adjust:100%}
 .app{min-height:100vh;background:var(--bg);color:var(--text);
@@ -38,6 +44,14 @@ html{-webkit-text-size-adjust:100%}
 .brand-name .g,.hero h1 .g{background:var(--grad-brand);-webkit-background-clip:text;background-clip:text;
   -webkit-text-fill-color:transparent}
 .bar,.prof-switch button,.budget-go,.edit-close,.aff-btn,.readout::after{transition:background .45s ease,color .3s ease}
+
+
+.theme-btn{position:fixed;top:14px;right:14px;z-index:50;width:38px;height:38px;border-radius:50%;
+  background:var(--panel);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.08);transition:transform .15s,background .3s}
+.theme-btn:hover{transform:scale(1.06)}
+.theme-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.theme-btn svg{width:18px;height:18px;stroke:var(--text)}
 
 /* ── Marque ── */
 .brand{display:flex;flex-direction:column;gap:2px;margin-bottom:22px}
@@ -283,6 +297,8 @@ section[id]{scroll-margin-top:16px}
   background:radial-gradient(680px 420px at 82% 8%, rgba(225,29,46,.05), transparent 60%),
              radial-gradient(560px 360px at 12% 92%, rgba(255,90,60,.04), transparent 60%);
   animation:breathe 11s ease-in-out infinite}
+.dark .ambient{background:radial-gradient(680px 420px at 82% 8%, rgba(255,59,78,.14), transparent 60%),
+  radial-gradient(560px 360px at 12% 92%, rgba(255,90,60,.09), transparent 60%)}
 @keyframes breathe{0%,100%{opacity:.55;transform:scale(1)}50%{opacity:1;transform:scale(1.06)}}
 
 /* ── Champ de recherche dans les listes ── */
@@ -1151,6 +1167,24 @@ export default function App() {
   const [res, setRes] = useState("1440p");
   const [shared, setShared] = useState(false);   // lien copié ?
   const [booting, setBooting] = useState(true);   // effet d'ouverture TV
+  // Nuit locale = entre 20h et 7h. Sombre si la nuit tombe OU si le système est en sombre.
+  const isNightNow = () => { const h = new Date().getHours(); return h >= 20 || h < 7; };
+  const [dark, setDark] = useState(() => {
+    try {
+      const sysDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+      return sysDark || isNightNow();
+    } catch { return isNightNow(); }
+  });
+  // Si l'utilisateur n'a pas encore choisi manuellement, on suit les changements de préférence système
+  const darkManual = useRef(false);
+  useEffect(() => {
+    if (!window.matchMedia) return;
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const onChange = (e) => { if (!darkManual.current) setDark(e.matches || isNightNow()); };
+    mq.addEventListener?.("change", onChange);
+    return () => mq.removeEventListener?.("change", onChange);
+  }, []);
+  const toggleDark = () => { darkManual.current = true; setDark((d) => !d); };
   const [budget, setBudget] = useState("1000");
   const [profile, setProfile] = useState("gaming");
   const [suggestedTotal, setSuggestedTotal] = useState(null);
@@ -1224,8 +1258,8 @@ export default function App() {
     return key(a.name) - key(b.name);
   });
 
-  if (page === "legal") return <div className="app"><style>{css}</style><LegalPage onBack={() => setPage("sim")} /></div>;
-  if (page === "privacy") return <div className="app"><style>{css}</style><PrivacyPage onBack={() => setPage("sim")} /></div>;
+  if (page === "legal") return <div className={`app ${dark ? "dark" : ""}`}><style>{css}</style><LegalPage onBack={() => setPage("sim")} /></div>;
+  if (page === "privacy") return <div className={`app ${dark ? "dark" : ""}`}><style>{css}</style><PrivacyPage onBack={() => setPage("sim")} /></div>;
 
   const picks = [
     { label: "CPU", kind: "cpu", item: cpu, spec: `${cpu.cores} cœurs · ${cpu.socket}` },
@@ -1240,8 +1274,15 @@ export default function App() {
   ];
 
   return (
-    <div className={`app prof-${profile}`}>
+    <div className={`app prof-${profile} ${dark ? "dark" : ""}`}>
       <style>{css}</style>
+      <button className="theme-btn" onClick={toggleDark} aria-label={dark ? "Passer en mode clair" : "Passer en mode sombre"}>
+        {dark ? (
+          <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 3v2M12 19v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M3 12h2M19 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>
+        ) : (
+          <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.7 6.7 0 0 0 10.5 10.5z"/></svg>
+        )}
+      </button>
       {booting && <div className="tv-boot" aria-hidden="true"><span className="tv-line" /><span className="tv-flash" /></div>}
       <div className="ambient" aria-hidden="true" />
       <header className="hero">
