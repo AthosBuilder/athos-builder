@@ -9,6 +9,7 @@ const css = `
   --iris:#E11D2E; --cyan:#FF5A3C; --accent:#E11D2E; --accent2:#FF5A3C;
   --good:#1FA971; --ok:#C98A00; --bad:#E11D2E;
   --grad:linear-gradient(100deg,#E11D2E 0%,#F0322F 50%,#FF5A3C 100%);
+  --grad-brand:linear-gradient(100deg,#E11D2E 0%,#F0322F 50%,#FF5A3C 100%);
 }
 *{box-sizing:border-box;margin:0}
 html{-webkit-text-size-adjust:100%}
@@ -19,6 +20,24 @@ html{-webkit-text-size-adjust:100%}
                    radial-gradient(520px 300px at 4% 4%, rgba(255,90,60,.05), transparent 60%);}
 .mono{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums}
 
+
+
+/* ── Teinte selon le profil d'usage (le rouge de marque reste le point de départ) ── */
+.app{transition:background-image .5s ease}
+.prof-gaming{--accent:#E11D2E;--accent2:#FF5A3C;--iris:#E11D2E;--cyan:#FF5A3C;
+  --grad:linear-gradient(100deg,#E11D2E 0%,#F0322F 50%,#FF5A3C 100%)}
+.prof-workstation{--accent:#E11D2E;--accent2:#8B5CF6;--iris:#E11D2E;--cyan:#8B5CF6;
+  --grad:linear-gradient(100deg,#E11D2E 0%,#C9349B 50%,#8B5CF6 100%)}
+.prof-bureautique{--accent:#E11D2E;--accent2:#1D6FE1;--iris:#E11D2E;--cyan:#1D6FE1;
+  --grad:linear-gradient(100deg,#E11D2E 0%,#7A4FD0 45%,#1D6FE1 100%)}
+.prof-workstation{background-image:radial-gradient(600px 340px at 92% -6%, rgba(139,92,246,.08), transparent 62%),
+  radial-gradient(520px 300px at 4% 4%, rgba(225,29,46,.05), transparent 60%)}
+.prof-bureautique{background-image:radial-gradient(600px 340px at 92% -6%, rgba(29,111,225,.09), transparent 62%),
+  radial-gradient(520px 300px at 4% 4%, rgba(225,29,46,.04), transparent 60%)}
+/* Le logo et le grand titre gardent le rouge de la marque en toutes circonstances */
+.brand-name .g,.hero h1 .g{background:var(--grad-brand);-webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent}
+.bar,.prof-switch button,.budget-go,.edit-close,.aff-btn,.readout::after{transition:background .45s ease,color .3s ease}
 
 /* ── Marque ── */
 .brand{display:flex;flex-direction:column;gap:2px;margin-bottom:22px}
@@ -1218,7 +1237,7 @@ export default function App() {
   ];
 
   return (
-    <div className="app">
+    <div className={`app prof-${profile}`}>
       <style>{css}</style>
       {booting && <div className="tv-boot" aria-hidden="true"><span className="tv-line" /><span className="tv-flash" /></div>}
       <div className="ambient" aria-hidden="true" />
