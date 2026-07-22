@@ -325,6 +325,7 @@ section[id]{scroll-margin-top:16px}
    CONFIG AFFILIATION — remplace par tes identifiants.
    ════════════════════════════════════════════════════════ */
 const AFFILIATE = { amazonTag: "" }; // ex: "monsite-21"
+const HAS_AFFILIATE = AFFILIATE.amazonTag.trim().length > 0;
 function affLink(productName) {
   const q = encodeURIComponent(productName);
   const tag = AFFILIATE.amazonTag ? `&tag=${AFFILIATE.amazonTag}` : "";
@@ -963,8 +964,10 @@ function LegalPage({ onBack }) {
       <p>Site édité à titre personnel. Contact : <a href="mailto:athosbuilder.fr@gmail.com">athosbuilder.fr@gmail.com</a></p>
       <h2>Hébergement</h2>
       <p>Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, États-Unis.</p>
-      <h2>Liens d'affiliation</h2>
-      <p>Ce site contient des liens d'affiliation. Lorsque vous achetez un produit via ces liens, l'éditeur du site perçoit une commission de la part du marchand, sans surcoût pour vous. Ces commissions n'influencent pas les scores et estimations affichés, qui sont calculés indépendamment.</p>
+      <h2>Liens vers les marchands</h2>
+      <p>{HAS_AFFILIATE
+        ? "Ce site contient des liens d'affiliation. Lorsque vous achetez un produit via ces liens, l'éditeur du site perçoit une commission de la part du marchand, sans surcoût pour vous. Ces commissions n'influencent pas les scores et estimations affichés, qui sont calculés indépendamment."
+        : "Les boutons « Voir le prix » renvoient vers une recherche marchand classique. Ce site ne perçoit actuellement aucune commission sur les achats. Si des liens d'affiliation étaient mis en place, cette page serait mise à jour et une mention visible apparaîtrait sur le site."}</p>
       <h2>Limites des estimations</h2>
       <p>Les performances (FPS, scores, compatibilités, consommations) sont des estimations indicatives issues d'un modèle basé sur des moyennes de benchmarks et fiches techniques publiques. Elles ne constituent ni une garantie ni un conseil d'achat contractuel. Vérifiez toujours les dimensions et compatibilités exactes des modèles précis avant achat.</p>
       <h2>Propriété intellectuelle</h2>
@@ -1303,7 +1306,9 @@ export default function App() {
         )}
       </section>
 
-      <p className="disclosure">Liens d'affiliation : un achat via « Voir le prix » soutient le site, sans surcoût pour toi.</p>
+      {HAS_AFFILIATE && (
+        <p className="disclosure">Liens d'affiliation : un achat via « Voir le prix » soutient le site, sans surcoût pour toi.</p>
+      )}
 
       <section className="panel picker" id="s-parts">
         <h2 className="panel-title">Composants</h2>
