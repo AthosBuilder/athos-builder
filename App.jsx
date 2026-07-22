@@ -84,16 +84,23 @@ option{color:var(--text);background:var(--panel2);font-family:'Inter',sans-serif
 
 /* ── Récap composants ── */
 .picks{list-style:none;padding:0;margin-top:20px;display:grid;gap:8px}
-.picks li{display:flex;justify-content:space-between;align-items:center;gap:10px;
+.picks li{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;
   background:var(--panel2);border:1px solid var(--line);border-radius:13px;padding:9px 10px;
   transition:border-color .15s,transform .15s}
 .picks li:hover{border-color:var(--dim);transform:translateX(2px)}
-.pick-name{font-size:13.5px;display:flex;align-items:center;gap:11px;min-width:0}
+.pick-name{font-size:13.5px;display:flex;align-items:flex-start;gap:11px;min-width:0;flex:1 1 auto}
 .pick-ico{flex-shrink:0;width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center}
-.pick-tag{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--muted);letter-spacing:.12em}
-.pick-label{display:flex;flex-direction:column;gap:2px;min-width:0}
-.pick-label b{font-weight:500;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.aff-btn{flex-shrink:0;font-size:12.5px;font-weight:600;color:#fff;background:var(--accent);
+.pick-tag{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--muted);letter-spacing:.1em;white-space:normal;overflow-wrap:anywhere;line-height:1.35}
+.pick-label{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1 1 auto}
+.pick-label b{font-weight:500;font-size:13.5px;white-space:normal;overflow-wrap:anywhere;line-height:1.3}
+
+@media(max-width:420px){
+  .picks li{gap:8px;padding:8px 10px 8px 8px}
+  .pick-ico{width:34px;height:34px}
+  .aff-btn{font-size:11.5px;padding:7px 10px}
+  .pick-label b{font-size:13px}
+}
+.aff-btn{flex-shrink:0;margin-top:2px;font-size:12.5px;font-weight:600;color:#fff;background:var(--accent);
   padding:8px 13px;border-radius:9px;text-decoration:none;white-space:nowrap;transition:transform .12s,background .15s}
 .aff-btn:hover{background:var(--accent2);transform:translateY(-1px)}
 .aff-btn:focus-visible{outline:2px solid var(--iris);outline-offset:2px}
@@ -514,35 +521,35 @@ const CPU_GROUPS = [
 
 const RAM_GROUPS = [
   { label: "DDR5 (plateformes récentes)", items: [
-    { id:"d5-256-60", name:"256 Go DDR5-6000 (workstation)", gb:256, type:"DDR5", mhz:6000, speed:"6000 MHz", price:1450, ws:true },
-    { id:"d5-256", name:"256 Go DDR5-5600 (workstation)", gb:256, type:"DDR5", mhz:5600, speed:"5600 MHz", price:1350, ws:true },
-    { id:"d5-128-64", name:"128 Go DDR5-6400", gb:128, type:"DDR5", mhz:6400, speed:"6400 MHz", price:760 },
-    { id:"d5-128-60", name:"128 Go DDR5-6000", gb:128, type:"DDR5", mhz:6000, speed:"6000 MHz", price:720 },
-    { id:"d5-128", name:"128 Go DDR5-5600", gb:128, type:"DDR5", mhz:5600, speed:"5600 MHz", price:690 },
-    { id:"d5-64-64", name:"64 Go DDR5-6400", gb:64, type:"DDR5", mhz:6400, speed:"6400 MHz", price:409 },
-    { id:"d5-64", name:"64 Go DDR5-6000", gb:64, type:"DDR5", mhz:6000, speed:"6000 MHz", price:379 },
-    { id:"d5-32-80", name:"32 Go DDR5-8000", gb:32, type:"DDR5", mhz:8000, speed:"8000 MHz", price:279 },
-    { id:"d5-32-72", name:"32 Go DDR5-7200", gb:32, type:"DDR5", mhz:7200, speed:"7200 MHz", price:239 },
-    { id:"d5-32-64", name:"32 Go DDR5-6400", gb:32, type:"DDR5", mhz:6400, speed:"6400 MHz", price:209 },
-    { id:"d5-32", name:"32 Go DDR5-6000", gb:32, type:"DDR5", mhz:6000, speed:"6000 MHz", price:189 },
-    { id:"d5-16", name:"16 Go DDR5-5600", gb:16, type:"DDR5", mhz:5600, speed:"5600 MHz", price:95 },
+    { id:"d5-256-60", name:"256 Go DDR5-6000 (workstation)", gb:256, type:"DDR5", mhz:6000, speed:"6000 MHz", price:2890, ws:true },
+    { id:"d5-256", name:"256 Go DDR5-5600 (workstation)", gb:256, type:"DDR5", mhz:5600, speed:"5600 MHz", price:2690, ws:true },
+    { id:"d5-128-64", name:"128 Go DDR5-6400", gb:128, type:"DDR5", mhz:6400, speed:"6400 MHz", price:1490 },
+    { id:"d5-128-60", name:"128 Go DDR5-6000", gb:128, type:"DDR5", mhz:6000, speed:"6000 MHz", price:1420 },
+    { id:"d5-128", name:"128 Go DDR5-5600", gb:128, type:"DDR5", mhz:5600, speed:"5600 MHz", price:1350 },
+    { id:"d5-64-64", name:"64 Go DDR5-6400", gb:64, type:"DDR5", mhz:6400, speed:"6400 MHz", price:780 },
+    { id:"d5-64", name:"64 Go DDR5-6000", gb:64, type:"DDR5", mhz:6000, speed:"6000 MHz", price:720 },
+    { id:"d5-32-80", name:"32 Go DDR5-8000", gb:32, type:"DDR5", mhz:8000, speed:"8000 MHz", price:520 },
+    { id:"d5-32-72", name:"32 Go DDR5-7200", gb:32, type:"DDR5", mhz:7200, speed:"7200 MHz", price:460 },
+    { id:"d5-32-64", name:"32 Go DDR5-6400", gb:32, type:"DDR5", mhz:6400, speed:"6400 MHz", price:399 },
+    { id:"d5-32", name:"32 Go DDR5-6000", gb:32, type:"DDR5", mhz:6000, speed:"6000 MHz", price:365 },
+    { id:"d5-16", name:"16 Go DDR5-5600", gb:16, type:"DDR5", mhz:5600, speed:"5600 MHz", price:185 },
   ]},
   { label: "DDR4 (plateformes 2019-2022)", items: [
-    { id:"d4-32", name:"32 Go DDR4-3600", gb:32, type:"DDR4", mhz:3600, speed:"3600 MHz", price:129 },
-    { id:"d4-16", name:"16 Go DDR4-3600", gb:16, type:"DDR4", mhz:3600, speed:"3600 MHz", price:69 },
-    { id:"d4-8", name:"8 Go DDR4-3200", gb:8, type:"DDR4", mhz:3200, speed:"3200 MHz", price:38 },
+    { id:"d4-32", name:"32 Go DDR4-3600", gb:32, type:"DDR4", mhz:3600, speed:"3600 MHz", price:169 },
+    { id:"d4-16", name:"16 Go DDR4-3600", gb:16, type:"DDR4", mhz:3600, speed:"3600 MHz", price:89 },
+    { id:"d4-8", name:"8 Go DDR4-3200", gb:8, type:"DDR4", mhz:3200, speed:"3200 MHz", price:52 },
   ]},
 ];
 const SSD_GROUPS = [
   { label: "NVMe", items: [
-    { id:"n4", name:"SSD NVMe 4 To", tb:4, price:329 },
-    { id:"n2", name:"SSD NVMe 2 To", tb:2, price:169 },
-    { id:"n1", name:"SSD NVMe 1 To", tb:1, price:92 },
-    { id:"n05", name:"SSD NVMe 500 Go", tb:0.5, price:45 },
+    { id:"n4", name:"SSD NVMe 4 To", tb:4, price:640 },
+    { id:"n2", name:"SSD NVMe 2 To", tb:2, price:345 },
+    { id:"n1", name:"SSD NVMe 1 To", tb:1, price:185 },
+    { id:"n05", name:"SSD NVMe 500 Go", tb:0.5, price:105 },
   ]},
   { label: "SATA", items: [
-    { id:"s1", name:"SSD SATA 1 To", tb:1, price:60 },
-    { id:"s05", name:"SSD SATA 500 Go", tb:0.5, price:38 },
+    { id:"s1", name:"SSD SATA 1 To", tb:1, price:155 },
+    { id:"s05", name:"SSD SATA 500 Go", tb:0.5, price:88 },
   ]},
 ];
 const PSU_GROUPS = [
@@ -654,14 +661,17 @@ const ALL_MBS = flat(MB_GROUPS);
 
 // Badges dérivés : upscaling supporté par GPU
 function upscalingOf(name){
-  if(/^RTX 5\d/.test(name)||/RTX PRO 6000/.test(name)) return "DLSS 4";
-  if(/^RTX 4|Ada/.test(name)) return "DLSS 3";
-  if(/^RTX [23]\d/.test(name)) return "DLSS 2";
+  if(/^RTX 5\d/.test(name)||/RTX PRO 6000/.test(name)) return "DLSS 4.5";
+  if(/^RTX 4|Ada/.test(name)) return "DLSS 4";
+  if(/^RTX [23]\d/.test(name)) return "DLSS";
+  if(/^RX 9\d/.test(name)) return "FSR 4";
   if(/^RX |Radeon PRO/.test(name)) return "FSR 3";
   if(/^Arc/.test(name)) return "XeSS";
   return null; // GTX : pas d'upscaling IA
 }
-ALL_GPUS.forEach((g)=>{ g.up = upscalingOf(g.name); if(g.pro===undefined) g.pro=false; });
+// DLSS 5 (rendu neuronal) : annoncé pour l'automne 2026, RTX 50 confirmées
+function dlss5Ready(name){ return /^RTX 5\d/.test(name) || /RTX PRO 6000/.test(name); }
+ALL_GPUS.forEach((g)=>{ g.up = upscalingOf(g.name); g.dlss5 = dlss5Ready(g.name); if(g.pro===undefined) g.pro=false; });
 ALL_CPUS.forEach((c)=>{ if(c.pro===undefined) c.pro=false; c.x3d=/X3D/i.test(c.name); });
 
 
@@ -933,7 +943,7 @@ function LegalPage({ onBack }) {
       <p><b>Athos Builder</b> · athosbuilder.fr</p>
       <p>Site édité à titre personnel. Contact : <a href="mailto:athosbuilder.fr@gmail.com">athosbuilder.fr@gmail.com</a></p>
       <h2>Hébergement</h2>
-    hébergeur réel</p>
+      <p>Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, États-Unis.</p>
       <h2>Liens d'affiliation</h2>
       <p>Ce site contient des liens d'affiliation. Lorsque vous achetez un produit via ces liens, l'éditeur du site perçoit une commission de la part du marchand, sans surcoût pour vous. Ces commissions n'influencent pas les scores et estimations affichés, qui sont calculés indépendamment.</p>
       <h2>Limites des estimations</h2>
@@ -1197,7 +1207,7 @@ export default function App() {
 
   const picks = [
     { label: "CPU", kind: "cpu", item: cpu, spec: `${cpu.cores} cœurs · ${cpu.socket}` },
-    { label: "GPU", kind: "gpu", item: gpu, spec: `${gpu.vram} Go${gpu.up ? " · " + gpu.up : ""}${gpu.pro ? " · Pro" : ""}` },
+    { label: "GPU", kind: "gpu", item: gpu, spec: `${gpu.vram} Go${gpu.up ? " · " + gpu.up : ""}${gpu.dlss5 ? " · DLSS 5 prévu" : ""}${gpu.pro ? " · Pro" : ""}` },
     { label: "C. MÈRE", kind: "mb", item: mb, spec: `${mb.socket} · ${mb.ddr}` },
     { label: "RAM", kind: "ram", item: ram, spec: ram.speed || ram.type },
     { label: "SSD", kind: "ssd", item: ssd, spec: null },
@@ -1327,7 +1337,7 @@ export default function App() {
         <div className="totals">
           <div>
             <span className="mono big">{total.toLocaleString("fr-FR")} €</span>
-            <span className="tiny">prix marché juillet 2026 (occasion pour les anciennes générations).</span>
+            <span className="tiny">prix marché juillet 2026. La mémoire et le stockage sont au plus haut à cause de la pénurie DRAM. Anciennes générations : prix de l'occasion.</span>
           </div>
           <div className="score-block">
             <span className="mono big copper">{globalScore}<span className="score-max">/100</span></span>
@@ -1391,7 +1401,7 @@ export default function App() {
             );
           })}
         </ul>
-        <p className="tiny note">Estimations indicatives basées sur des moyennes de benchmarks publics, réglages élevés, sans upscaling. Les FPS réels varient selon les pilotes, le refroidissement et les mises à jour des jeux.</p>
+        <p className="tiny note">Estimations indicatives basées sur des moyennes de benchmarks publics, réglages élevés, sans upscaling. Les FPS réels varient selon les pilotes, le refroidissement et les mises à jour des jeux. DLSS 5 (rendu neuronal) est annoncé pour l'automne 2026 sur les RTX 50 ; la version disponible aujourd'hui est DLSS 4.5.</p>
         </>
        )}
       </section>
