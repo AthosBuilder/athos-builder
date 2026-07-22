@@ -340,7 +340,7 @@ section[id]{scroll-margin-top:16px}
 /* ════════════════════════════════════════════════════════
    CONFIG AFFILIATION — remplace par tes identifiants.
    ════════════════════════════════════════════════════════ */
-const AFFILIATE = { amazonTag: "" }; // ex: "monsite-21"
+const AFFILIATE = { amazonTag: "athosbuilder-21" };
 const HAS_AFFILIATE = AFFILIATE.amazonTag.trim().length > 0;
 function affLink(productName) {
   const q = encodeURIComponent(productName);
