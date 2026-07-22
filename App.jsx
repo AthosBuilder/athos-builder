@@ -700,14 +700,20 @@ function upscalingOf(name){
   if(/^RTX 5\d/.test(name)||/RTX PRO 6000/.test(name)) return "DLSS 4.5";
   if(/^RTX 4|Ada/.test(name)) return "DLSS 4";
   if(/^RTX [23]\d/.test(name)) return "DLSS";
-  if(/^RX 9\d/.test(name)) return "FSR 4";
+  if(/^RX 9\d/.test(name)) return "FSR 4.1";           // RDNA 4 : natif depuis le lancement
+  if(/^RX 7\d/.test(name)) return "FSR 4.1";           // RDNA 3 : déploiement juillet 2026
+  if(/^RX 6\d/.test(name)) return "FSR 3 (FSR 4.1 prévu 2027)"; // RDNA 2 : encore en attente
   if(/^RX |Radeon PRO/.test(name)) return "FSR 3";
   if(/^Arc/.test(name)) return "XeSS";
   return null; // GTX : pas d'upscaling IA
 }
-// DLSS 5 (rendu neuronal) : annoncé pour l'automne 2026, RTX 50 confirmées
-function dlss5Ready(name){ return /^RTX 5\d/.test(name) || /RTX PRO 6000/.test(name); }
-ALL_GPUS.forEach((g)=>{ g.up = upscalingOf(g.name); g.dlss5 = dlss5Ready(g.name); if(g.pro===undefined) g.pro=false; });
+// Prochaines générations d'upscaling annoncées, par constructeur
+function upscalingNext(name){
+  if(/^RTX 5\d/.test(name)||/RTX PRO 6000/.test(name)) return "DLSS 5 (automne 2026)";
+  if(/^RX 6\d/.test(name)) return "FSR 4.1 (prévu début 2027)";
+  return null;
+}
+ALL_GPUS.forEach((g)=>{ g.up = upscalingOf(g.name); g.upNext = upscalingNext(g.name); if(g.pro===undefined) g.pro=false; });
 ALL_CPUS.forEach((c)=>{ if(c.pro===undefined) c.pro=false; c.x3d=/X3D/i.test(c.name); });
 
 
@@ -1263,7 +1269,7 @@ export default function App() {
 
   const picks = [
     { label: "CPU", kind: "cpu", item: cpu, spec: `${cpu.cores} cœurs · ${cpu.socket}` },
-    { label: "GPU", kind: "gpu", item: gpu, spec: `${gpu.vram} Go${gpu.up ? " · " + gpu.up : ""}${gpu.dlss5 ? " · DLSS 5 prévu" : ""}${gpu.pro ? " · Pro" : ""}` },
+    { label: "GPU", kind: "gpu", item: gpu, spec: `${gpu.vram} Go${gpu.up ? " · " + gpu.up : ""}${gpu.upNext ? " · " + gpu.upNext + " à venir" : ""}${gpu.pro ? " · Pro" : ""}` },
     { label: "C. MÈRE", kind: "mb", item: mb, spec: `${mb.socket} · ${mb.ddr}` },
     { label: "RAM", kind: "ram", item: ram, spec: ram.speed || ram.type },
     { label: "SSD", kind: "ssd", item: ssd, spec: null },
@@ -1466,7 +1472,7 @@ export default function App() {
             );
           })}
         </ul>
-        <p className="tiny note">Estimations indicatives basées sur des moyennes de benchmarks publics, réglages élevés, sans upscaling. Les FPS réels varient selon les pilotes, le refroidissement et les mises à jour des jeux. DLSS 5 (rendu neuronal) est annoncé pour l'automne 2026 sur les RTX 50 ; la version disponible aujourd'hui est DLSS 4.5.</p>
+        <p className="tiny note">Estimations indicatives basées sur des moyennes de benchmarks publics, réglages élevés, sans upscaling. Les FPS réels varient selon les pilotes, le refroidissement et les mises à jour des jeux.{gpu.up ? ` Upscaling actuel sur cette carte : ${gpu.up}.` : ""}{gpu.upNext ? ` ${gpu.upNext.replace(" à venir","")} est annoncé pour cette carte.` : ""}</p>
         </>
        )}
       </section>
