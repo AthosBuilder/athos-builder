@@ -933,7 +933,7 @@ function LegalPage({ onBack }) {
       <p><b>Athos Builder</b> · athosbuilder.fr</p>
       <p>Site édité à titre personnel. Contact : <a href="mailto:athosbuilder.fr@gmail.com">athosbuilder.fr@gmail.com</a></p>
       <h2>Hébergement</h2>
-      <p>[Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, USA — ou ton hébergeur réel]</p>
+    hébergeur réel</p>
       <h2>Liens d'affiliation</h2>
       <p>Ce site contient des liens d'affiliation. Lorsque vous achetez un produit via ces liens, l'éditeur du site perçoit une commission de la part du marchand, sans surcoût pour vous. Ces commissions n'influencent pas les scores et estimations affichés, qui sont calculés indépendamment.</p>
       <h2>Limites des estimations</h2>
