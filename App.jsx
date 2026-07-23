@@ -834,7 +834,7 @@ function upscalingOf(name){
   if(/^RTX [23]\d/.test(name)) return "DLSS";
   if(/^RX 9\d/.test(name)) return "FSR 4.1";           // RDNA 4 : natif depuis le lancement
   if(/^RX 7\d/.test(name)) return "FSR 4.1";           // RDNA 3 : déploiement juillet 2026
-  if(/^RX 6\d/.test(name)) return "FSR 3 (FSR 4.1 prévu 2027)"; // RDNA 2 : encore en attente
+  if(/^RX 6\d/.test(name)) return "FSR 3"; // RDNA 2 : FSR 4.1 annoncé pour 2027 (voir upscalingNext)
   if(/^RX |Radeon PRO/.test(name)) return "FSR 3";
   if(/^Arc/.test(name)) return "XeSS";
   return null; // GTX : pas d'upscaling IA
