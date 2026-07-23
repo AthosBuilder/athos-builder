@@ -250,7 +250,7 @@ section[id]{scroll-margin-top:16px}
 .prof-switch button.on{background:var(--grad);color:#fff;border-color:transparent}
 .prof-switch button:not(.on):hover{border-color:var(--dim);color:var(--text)}
 .prof-switch button:focus-visible{outline:2px solid var(--iris);outline-offset:2px}
-.prof-hint{color:var(--muted);font-size:13px;margin-top:12px;line-height:1.5}
+.prof-hint{color:var(--muted);font-size:13px;margin-top:12px;margin-bottom:18px;line-height:1.5}
 
 /* ── Panneau budget ── */
 .budget-panel{background:linear-gradient(180deg,rgba(79,224,208,.05),transparent),var(--panel)}
@@ -1446,8 +1446,8 @@ export default function App() {
       <div className="ambient" aria-hidden="true" />
       <header className="hero">
         <div className="brand"><span className="brand-name">Athos<span className="g">Builder</span></span><span className="brand-tag">simule, compare, assemble en un clic</span></div>
-        <h1>Compose ton PC.<br /><span className="g">Vois ce qu'il encaisse.</span></h1>
-        <p className="sub">Choisis tes pièces, on estime les FPS, on vérifie la compatibilité et on te montre le montage. Du budget occasion au monstre 4K.</p>
+        <h1>Ton budget.<br /><span className="g">Ta config.</span></h1>
+        <p className="sub">Entre une somme, obtiens une config complète et cohérente : compatibilité vérifiée, alimentation dimensionnée, FPS estimés jeu par jeu. Et chaque pièce reste modifiable.</p>
       </header>
 
       <div className="readout">
@@ -1462,23 +1462,19 @@ export default function App() {
       </div>
 
       <nav className="toc" aria-label="Sommaire">
-        <a href="#s-budget">Budget</a><a href="#s-parts">Composants</a><a href="#s-compat">Compatibilité</a>
+        <a href="#s-budget">Générer</a><a href="#s-parts">Composants</a><a href="#s-compat">Compatibilité</a>
         <a href="#s-perf">{isPro ? "Calcul" : "Performances"}</a><a href="#s-ai">IA</a><a href="#s-uses">Usages</a><a href="#s-compare">Comparer</a>
       </nav>
 
-      <section className="panel prof-panel">
-        <h2 className="panel-title">Profil d'usage</h2>
+      <section className="panel budget-panel" id="s-budget">
+        <h2 className="panel-title">Génère ta config</h2>
+        <p className="budget-sub">Choisis ton usage, entre ton budget, et la machine complète s'assemble : composants compatibles, alimentation dimensionnée, rien à corriger.</p>
         <div className="prof-switch" role="tablist" aria-label="Profil d'usage">
           {[["gaming","🎮 Gaming"],["workstation","🛠 Workstation"],["bureautique","💼 Bureautique"]].map(([id,lbl]) => (
             <button key={id} role="tab" aria-selected={profile===id} className={profile===id?"on":""} onClick={() => setProfile(id)}>{lbl}</button>
           ))}
         </div>
         <p className="prof-hint">{profile==="gaming" ? "Priorité au GPU et aux FPS." : profile==="workstation" ? "Priorité aux cœurs CPU, à la RAM et à la VRAM. Matériel pro inclus." : "Machine sobre, silencieuse et économique pour le quotidien."}</p>
-      </section>
-
-      <section className="panel budget-panel" id="s-budget">
-        <h2 className="panel-title">Config selon budget</h2>
-        <p className="budget-sub">Donne une somme, on assemble la machine la plus puissante et équilibrée qui rentre dedans.</p>
         <div className="budget-row">
           <div className="budget-input">
             <input type="number" inputMode="numeric" min="100" step="50" value={budget}
