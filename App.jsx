@@ -349,10 +349,13 @@ function affLink(product) {
   const tagParam = AFFILIATE.amazonTag ? `tag=${AFFILIATE.amazonTag}` : "";
   const asin = typeof product === "object" ? product.asin : null;
   const name = typeof product === "object" ? product.name : product;
+  // Composants qui ne se vendent plus neufs : on oriente la recherche vers
+  // les offres d'occasion et reconditionnées plutôt que vers du stock inexistant.
+  const isUsed = typeof product === "object" && product.used;
   if (asin) {
     return `https://www.amazon.fr/dp/${asin}${tagParam ? "?" + tagParam : ""}`;
   }
-  const q = encodeURIComponent(name);
+  const q = encodeURIComponent(isUsed ? `${name} occasion reconditionné` : name);
   return `https://www.amazon.fr/s?k=${q}&i=computers${tagParam ? "&" + tagParam : ""}`;
 }
 
@@ -420,18 +423,18 @@ const GPU_GROUPS = [
     { id:"3050", name:"RTX 3050", vram:8, score:22, price:180, watts:130, size:"std" },
   ]},
   { label: "NVIDIA · RTX 20 / GTX 16 (2019-20)", items: [
-    { id:"2080ti", name:"RTX 2080 Ti", vram:11, score:41, price:300, watts:260, size:"std" },
-    { id:"2080s", name:"RTX 2080 Super", vram:8, score:36, price:250, watts:250, size:"std" },
-    { id:"2080", name:"RTX 2080", vram:8, score:34, price:220, watts:225, size:"std" },
-    { id:"2070s", name:"RTX 2070 Super", vram:8, score:32, price:200, watts:215, size:"std" },
-    { id:"2070", name:"RTX 2070", vram:8, score:29, price:180, watts:185, size:"std" },
-    { id:"2060s", name:"RTX 2060 Super", vram:8, score:28, price:170, watts:175, size:"std" },
-    { id:"2060", name:"RTX 2060", vram:6, score:25, price:150, watts:160, size:"std" },
-    { id:"1660ti", name:"GTX 1660 Ti", vram:6, score:21, price:130, watts:120, size:"std" },
-    { id:"1660s", name:"GTX 1660 Super", vram:6, score:21, price:120, watts:125, size:"std" },
-    { id:"1660", name:"GTX 1660", vram:6, score:19, price:110, watts:120, size:"std" },
-    { id:"1650s", name:"GTX 1650 Super", vram:4, score:17, price:100, watts:100, size:"std" },
-    { id:"1650", name:"GTX 1650", vram:4, score:14, price:90, watts:75, size:"std" },
+    { id:"2080ti", used:true, name:"RTX 2080 Ti", vram:11, score:41, price:300, watts:260, size:"std" },
+    { id:"2080s", used:true, name:"RTX 2080 Super", vram:8, score:36, price:250, watts:250, size:"std" },
+    { id:"2080", used:true, name:"RTX 2080", vram:8, score:34, price:220, watts:225, size:"std" },
+    { id:"2070s", used:true, name:"RTX 2070 Super", vram:8, score:32, price:200, watts:215, size:"std" },
+    { id:"2070", used:true, name:"RTX 2070", vram:8, score:29, price:180, watts:185, size:"std" },
+    { id:"2060s", used:true, name:"RTX 2060 Super", vram:8, score:28, price:170, watts:175, size:"std" },
+    { id:"2060", used:true, name:"RTX 2060", vram:6, score:25, price:150, watts:160, size:"std" },
+    { id:"1660ti", used:true, name:"GTX 1660 Ti", vram:6, score:21, price:130, watts:120, size:"std" },
+    { id:"1660s", used:true, name:"GTX 1660 Super", vram:6, score:21, price:120, watts:125, size:"std" },
+    { id:"1660", used:true, name:"GTX 1660", vram:6, score:19, price:110, watts:120, size:"std" },
+    { id:"1650s", used:true, name:"GTX 1650 Super", vram:4, score:17, price:100, watts:100, size:"std" },
+    { id:"1650", used:true, name:"GTX 1650", vram:4, score:14, price:90, watts:75, size:"std" },
   ]},
   { label: "AMD · RX 9000 (2025-26)", items: [
     { id:"9070xt", name:"RX 9070 XT", vram:16, score:66, price:655, watts:305, size:"large" },
@@ -460,10 +463,10 @@ const GPU_GROUPS = [
     { id:"6500xt", name:"RX 6500 XT", vram:4, score:16, price:120, watts:107, size:"std" },
   ]},
   { label: "AMD · RX 5000 (2019-20)", items: [
-    { id:"5700xt", name:"RX 5700 XT", vram:8, score:30, price:170, watts:225, size:"std" },
-    { id:"5700", name:"RX 5700", vram:8, score:27, price:150, watts:180, size:"std" },
-    { id:"5600xt", name:"RX 5600 XT", vram:6, score:24, price:130, watts:150, size:"std" },
-    { id:"5500xt", name:"RX 5500 XT 8 Go", vram:8, score:18, price:100, watts:130, size:"std" },
+    { id:"5700xt", used:true, name:"RX 5700 XT", vram:8, score:30, price:170, watts:225, size:"std" },
+    { id:"5700", used:true, name:"RX 5700", vram:8, score:27, price:150, watts:180, size:"std" },
+    { id:"5600xt", used:true, name:"RX 5600 XT", vram:6, score:24, price:130, watts:150, size:"std" },
+    { id:"5500xt", used:true, name:"RX 5500 XT 8 Go", vram:8, score:18, price:100, watts:130, size:"std" },
   ]},
   { label: "NVIDIA · RTX PRO / workstation", items: [
     { id:"pro6000b", name:"RTX PRO 6000 Blackwell", vram:96, score:96, price:8500, watts:600, size:"large", pro:true, compute:100 },
@@ -490,7 +493,7 @@ const GPU_GROUPS = [
 const CPU_GROUPS = [
   { label: "AMD · Ryzen 9000 (2024-25)", items: [
     { id:"9950x3d", name:"Ryzen 9 9950X3D", cores:16, score:98, price:780, ddr:"DDR5", tdp:200, socket:"AM5" },
-    { id:"9800x3d", name:"Ryzen 7 9800X3D", cores:8, score:100, price:529, ddr:"DDR5", tdp:160, socket:"AM5" },
+    { id:"9800x3d", name:"Ryzen 7 9800X3D", cores:8, score:100, price:409, ddr:"DDR5", tdp:160, socket:"AM5" },
     { id:"9950x", name:"Ryzen 9 9950X", cores:16, score:82, price:650, ddr:"DDR5", tdp:230, socket:"AM5" },
     { id:"9900x", name:"Ryzen 9 9900X", cores:12, score:80, price:470, ddr:"DDR5", tdp:160, socket:"AM5" },
     { id:"9700x", name:"Ryzen 7 9700X", cores:8, score:77, price:360, ddr:"DDR5", tdp:110, socket:"AM5" },
@@ -517,10 +520,10 @@ const CPU_GROUPS = [
     { id:"5500", name:"Ryzen 5 5500", cores:6, score:45, price:90, ddr:"DDR4", tdp:65, socket:"AM4" },
   ]},
   { label: "AMD · Ryzen 3000 (2019)", items: [
-    { id:"3950x", name:"Ryzen 9 3950X", cores:16, score:48, price:250, ddr:"DDR4", tdp:142, socket:"AM4" },
-    { id:"3900x", name:"Ryzen 9 3900X", cores:12, score:47, price:180, ddr:"DDR4", tdp:142, socket:"AM4" },
-    { id:"3700x", name:"Ryzen 7 3700X", cores:8, score:44, price:120, ddr:"DDR4", tdp:88, socket:"AM4" },
-    { id:"3600", name:"Ryzen 5 3600", cores:6, score:40, price:80, ddr:"DDR4", tdp:88, socket:"AM4" },
+    { id:"3950x", used:true, name:"Ryzen 9 3950X", cores:16, score:48, price:250, ddr:"DDR4", tdp:142, socket:"AM4" },
+    { id:"3900x", used:true, name:"Ryzen 9 3900X", cores:12, score:47, price:180, ddr:"DDR4", tdp:142, socket:"AM4" },
+    { id:"3700x", used:true, name:"Ryzen 7 3700X", cores:8, score:44, price:120, ddr:"DDR4", tdp:88, socket:"AM4" },
+    { id:"3600", used:true, name:"Ryzen 5 3600", cores:6, score:40, price:80, ddr:"DDR4", tdp:88, socket:"AM4" },
   ]},
   { label: "AMD · Threadripper (workstation)", items: [
     { id:"tr7980x", name:"Ryzen Threadripper 7980X", cores:64, score:80, price:5200, ddr:"DDR5", tdp:350, socket:"sTR5", pro:true },
@@ -554,46 +557,78 @@ const CPU_GROUPS = [
     { id:"11400f", name:"i5-11400F", cores:6, score:45, price:90, ddr:"DDR4", tdp:154, socket:"LGA1200" },
   ]},
   { label: "Intel · 9e / 10e gen (2019-20)", items: [
-    { id:"10900k", name:"i9-10900K", cores:10, score:52, price:170, ddr:"DDR4", tdp:250, socket:"LGA1200" },
-    { id:"10700k", name:"i7-10700K", cores:8, score:48, price:130, ddr:"DDR4", tdp:229, socket:"LGA1200" },
-    { id:"10400f", name:"i5-10400F", cores:6, score:40, price:75, ddr:"DDR4", tdp:134, socket:"LGA1200" },
-    { id:"9900k", name:"i9-9900K", cores:8, score:46, price:140, ddr:"DDR4", tdp:210, socket:"LGA1151" },
-    { id:"9700k", name:"i7-9700K", cores:8, score:42, price:100, ddr:"DDR4", tdp:180, socket:"LGA1151" },
-    { id:"9400f", name:"i5-9400F", cores:6, score:33, price:60, ddr:"DDR4", tdp:84, socket:"LGA1151" },
+    { id:"10900k", used:true, name:"i9-10900K", cores:10, score:52, price:170, ddr:"DDR4", tdp:250, socket:"LGA1200" },
+    { id:"10700k", used:true, name:"i7-10700K", cores:8, score:48, price:130, ddr:"DDR4", tdp:229, socket:"LGA1200" },
+    { id:"10400f", used:true, name:"i5-10400F", cores:6, score:40, price:75, ddr:"DDR4", tdp:134, socket:"LGA1200" },
+    { id:"9900k", used:true, name:"i9-9900K", cores:8, score:46, price:140, ddr:"DDR4", tdp:210, socket:"LGA1151" },
+    { id:"9700k", used:true, name:"i7-9700K", cores:8, score:42, price:100, ddr:"DDR4", tdp:180, socket:"LGA1151" },
+    { id:"9400f", used:true, name:"i5-9400F", cores:6, score:33, price:60, ddr:"DDR4", tdp:84, socket:"LGA1151" },
   ]},
 ];
 
 const RAM_GROUPS = [
-  { label: "DDR5 (plateformes récentes)", items: [
-    { id:"d5-256-60", name:"256 Go DDR5-6000 (workstation)", gb:256, type:"DDR5", mhz:6000, speed:"6000 MHz", price:2890, ws:true },
-    { id:"d5-256", name:"256 Go DDR5-5600 (workstation)", gb:256, type:"DDR5", mhz:5600, speed:"5600 MHz", price:2690, ws:true },
-    { id:"d5-128-64", name:"128 Go DDR5-6400", gb:128, type:"DDR5", mhz:6400, speed:"6400 MHz", price:1490 },
-    { id:"d5-128-60", name:"128 Go DDR5-6000", gb:128, type:"DDR5", mhz:6000, speed:"6000 MHz", price:1420 },
-    { id:"d5-128", name:"128 Go DDR5-5600", gb:128, type:"DDR5", mhz:5600, speed:"5600 MHz", price:1350 },
-    { id:"d5-64-64", name:"64 Go DDR5-6400", gb:64, type:"DDR5", mhz:6400, speed:"6400 MHz", price:780 },
-    { id:"d5-64", name:"64 Go DDR5-6000", gb:64, type:"DDR5", mhz:6000, speed:"6000 MHz", price:720 },
-    { id:"d5-32-80", name:"32 Go DDR5-8000", gb:32, type:"DDR5", mhz:8000, speed:"8000 MHz", price:520 },
-    { id:"d5-32-72", name:"32 Go DDR5-7200", gb:32, type:"DDR5", mhz:7200, speed:"7200 MHz", price:460 },
-    { id:"d5-32-64", name:"32 Go DDR5-6400", gb:32, type:"DDR5", mhz:6400, speed:"6400 MHz", price:399 },
-    { id:"d5-32", name:"32 Go DDR5-6000", gb:32, type:"DDR5", mhz:6000, speed:"6000 MHz", price:365 },
-    { id:"d5-16", name:"16 Go DDR5-5600", gb:16, type:"DDR5", mhz:5600, speed:"5600 MHz", price:185 },
+  { label: "DDR5 · 16 Go (budget serré)", items: [
+    { id:"r-fury16-6000", name:"Kingston FURY Beast 16 Go (2x8) DDR5-6000 CL36", gb:16, type:"DDR5", mhz:6000, speed:"6000 MHz", price:215 },
+    { id:"r-veng16-5600", name:"Corsair Vengeance 16 Go (2x8) DDR5-5600 CL36", gb:16, type:"DDR5", mhz:5600, speed:"5600 MHz", price:195 },
   ]},
-  { label: "DDR4 (plateformes 2019-2022)", items: [
-    { id:"d4-32", name:"32 Go DDR4-3600", gb:32, type:"DDR4", mhz:3600, speed:"3600 MHz", price:169 },
-    { id:"d4-16", name:"16 Go DDR4-3600", gb:16, type:"DDR4", mhz:3600, speed:"3600 MHz", price:89 },
-    { id:"d4-8", name:"8 Go DDR4-3200", gb:8, type:"DDR4", mhz:3200, speed:"3200 MHz", price:52 },
+  { label: "DDR5 · 32 Go (référence gaming)", items: [
+    { id:"r-fury32-5600", name:"Kingston FURY Beast RGB 32 Go (2x16) DDR5-5600 CL40", gb:32, type:"DDR5", mhz:5600, speed:"5600 MHz", price:249 },
+    { id:"r-veng32-5600", name:"Corsair Vengeance 32 Go (2x16) DDR5-5600 CL40", gb:32, type:"DDR5", mhz:5600, speed:"5600 MHz", price:339 },
+    { id:"r-fury32-6000", name:"Kingston FURY Beast 32 Go (2x16) DDR5-6000 CL30", gb:32, type:"DDR5", mhz:6000, speed:"6000 MHz", price:399 },
+    { id:"r-veng32-6000", name:"Corsair Vengeance 32 Go (2x16) DDR5-6000 CL36", gb:32, type:"DDR5", mhz:6000, speed:"6000 MHz", price:409 },
+    { id:"r-flare32-6000", name:"G.Skill Flare X5 32 Go (2x16) DDR5-6000 CL36 EXPO", gb:32, type:"DDR5", mhz:6000, speed:"6000 MHz", price:419 },
+    { id:"r-tz32-6000", name:"G.Skill Trident Z5 Neo RGB 32 Go DDR5-6000 CL30", gb:32, type:"DDR5", mhz:6000, speed:"6000 MHz", price:519 },
+    { id:"r-veng32-6400", name:"Corsair Vengeance RGB 32 Go (2x16) DDR5-6400 CL36", gb:32, type:"DDR5", mhz:6400, speed:"6400 MHz", price:459 },
+    { id:"r-crucial32-6400", name:"Crucial Pro Overclocking 32 Go DDR5-6400 CL32", gb:32, type:"DDR5", mhz:6400, speed:"6400 MHz", price:449 },
+    { id:"r-tz32-7200", name:"G.Skill Trident Z5 RGB 32 Go DDR5-7200 CL36", gb:32, type:"DDR5", mhz:7200, speed:"7200 MHz", price:559 },
+    { id:"r-tz32-8000", name:"G.Skill Trident Z5 RGB 32 Go DDR5-8000 CL38", gb:32, type:"DDR5", mhz:8000, speed:"8000 MHz", price:629 },
+  ]},
+  { label: "DDR5 · 64 Go (création, multitâche)", items: [
+    { id:"r-fury64-6000", name:"Kingston FURY Beast 64 Go (2x32) DDR5-6000 CL36", gb:64, type:"DDR5", mhz:6000, speed:"6000 MHz", price:789 },
+    { id:"r-reneg64-6400", name:"Kingston FURY Renegade 64 Go (2x32) DDR5-6400 CL32", gb:64, type:"DDR5", mhz:6400, speed:"6400 MHz", price:849 },
+    { id:"r-veng64-6000", name:"Corsair Vengeance RGB 64 Go (2x32) DDR5-6000 CL30", gb:64, type:"DDR5", mhz:6000, speed:"6000 MHz", price:1229 },
+  ]},
+  { label: "DDR5 · 128 Go et plus (workstation)", items: [
+    { id:"r-veng128-5600", name:"Corsair Vengeance 128 Go (4x32) DDR5-5600 CL40", gb:128, type:"DDR5", mhz:5600, speed:"5600 MHz", price:1490 },
+    { id:"r-fury128-6000", name:"Kingston FURY Beast 128 Go (4x32) DDR5-6000 CL36", gb:128, type:"DDR5", mhz:6000, speed:"6000 MHz", price:1590 },
+    { id:"r-tz128-6400", name:"G.Skill Trident Z5 Neo RGB 128 Go (2x64) DDR5-6400", gb:128, type:"DDR5", mhz:6400, speed:"6400 MHz", price:1790 },
+    { id:"r-reneg256-5600", name:"Kingston FURY Renegade Pro 256 Go DDR5-5600 (workstation)", gb:256, type:"DDR5", mhz:5600, speed:"5600 MHz", price:2890, ws:true },
+    { id:"r-reneg256-6000", name:"Kingston FURY Renegade Pro 256 Go DDR5-6000 (workstation)", gb:256, type:"DDR5", mhz:6000, speed:"6000 MHz", price:3190, ws:true },
+  ]},
+  { label: "DDR4 · plateformes 2019-2022", items: [
+    { id:"r-lpx8-3200", name:"Corsair Vengeance LPX 8 Go (2x4) DDR4-3200 CL16", gb:8, type:"DDR4", mhz:3200, speed:"3200 MHz", price:69 },
+    { id:"r-lpx16-3200", name:"Corsair Vengeance LPX 16 Go (2x8) DDR4-3200 CL16", gb:16, type:"DDR4", mhz:3200, speed:"3200 MHz", price:119 },
+    { id:"r-ripjaws16-3600", name:"G.Skill Ripjaws V 16 Go (2x8) DDR4-3600 CL16", gb:16, type:"DDR4", mhz:3600, speed:"3600 MHz", price:129 },
+    { id:"r-lpx32-3200", name:"Corsair Vengeance LPX 32 Go (2x16) DDR4-3200 CL16", gb:32, type:"DDR4", mhz:3200, speed:"3200 MHz", price:235 },
+    { id:"r-fury32-3600d4", name:"Kingston FURY Beast 32 Go (2x16) DDR4-3600 CL18", gb:32, type:"DDR4", mhz:3600, speed:"3600 MHz", price:249 },
   ]},
 ];
 const SSD_GROUPS = [
-  { label: "NVMe", items: [
-    { id:"n4", name:"SSD NVMe 4 To", tb:4, price:640 },
-    { id:"n2", name:"SSD NVMe 2 To", tb:2, price:345 },
-    { id:"n1", name:"SSD NVMe 1 To", tb:1, price:185 },
-    { id:"n05", name:"SSD NVMe 500 Go", tb:0.5, price:105 },
+  { label: "SSD NVMe · 500 Go", items: [
+    { id:"s-p3plus500", name:"Crucial P3 Plus 500 Go NVMe", tb:0.5, price:99 },
+    { id:"s-nq790-500", name:"Lexar NQ790 500 Go NVMe", tb:0.5, price:95 },
   ]},
-  { label: "SATA", items: [
-    { id:"s1", name:"SSD SATA 1 To", tb:1, price:155 },
-    { id:"s05", name:"SSD SATA 500 Go", tb:0.5, price:88 },
+  { label: "SSD NVMe · 1 To", items: [
+    { id:"s-nq790-1", name:"Lexar NQ790 1 To NVMe PCIe 4.0", tb:1, price:169 },
+    { id:"s-p3plus1", name:"Crucial P3 Plus 1 To NVMe", tb:1, price:159 },
+    { id:"s-sn770-1", name:"WD Black SN770 1 To NVMe", tb:1, price:175 },
+    { id:"s-990evo1", name:"Samsung 990 EVO Plus 1 To NVMe", tb:1, price:185 },
+  ]},
+  { label: "SSD NVMe · 2 To", items: [
+    { id:"s-t500-2", name:"Crucial T500 2 To NVMe PCIe 4.0", tb:2, price:319 },
+    { id:"s-nm790-2", name:"Lexar NM790 2 To NVMe", tb:2, price:305 },
+    { id:"s-sn850x-2", name:"WD Black SN850X 2 To NVMe", tb:2, price:349 },
+    { id:"s-990pro2", name:"Samsung 990 PRO 2 To NVMe", tb:2, price:345 },
+  ]},
+  { label: "SSD NVMe · 4 To", items: [
+    { id:"s-nm790-4", name:"Lexar NM790 4 To NVMe", tb:4, price:599 },
+    { id:"s-t500-4", name:"Crucial T500 4 To NVMe", tb:4, price:645 },
+    { id:"s-990pro4", name:"Samsung 990 PRO 4 To NVMe", tb:4, price:669 },
+  ]},
+  { label: "SSD SATA", items: [
+    { id:"s-bx500-1", name:"Crucial BX500 1 To SATA", tb:1, price:145 },
+    { id:"s-870evo1", name:"Samsung 870 EVO 1 To SATA", tb:1, price:165 },
+    { id:"s-bx500-500", name:"Crucial BX500 500 Go SATA", tb:0.5, price:85 },
   ]},
 ];
 const PSU_GROUPS = [
@@ -628,22 +663,36 @@ const PSU_GROUPS = [
 ];
 const COOLER_GROUPS = [
   { label: "Watercooling AIO", items: [
-    { id:"aio420", name:"Watercooling AIO 420 mm", cap:420, price:210 },
-    { id:"aiotr", name:"Watercooling workstation Threadripper (sTR5)", cap:400, price:260 },
-    { id:"aio360", name:"Watercooling AIO 360 mm", cap:320, price:150 },
-    { id:"aio240", name:"Watercooling AIO 240 mm", cap:260, price:100 },
+    { id:"cl-lf3pro420", name:"ARCTIC Liquid Freezer III Pro 420 A-RGB", cap:450, price:115 },
+    { id:"cl-lf3pro360", name:"ARCTIC Liquid Freezer III Pro 360 A-RGB", cap:420, price:95 },
+    { id:"cl-lf3-240", name:"ARCTIC Liquid Freezer III 240", cap:300, price:75 },
+    { id:"cl-nautilus360", name:"Corsair Nautilus 360 RS", cap:340, price:125 },
+    { id:"cl-pureloop360", name:"be quiet! Pure Loop 3 360mm", cap:350, price:145 },
+    { id:"cl-kraken360", name:"NZXT Kraken 360 RGB", cap:350, price:199 },
+    { id:"cl-h150i", name:"Corsair iCUE LINK H150i RGB", cap:360, price:209 },
   ]},
   { label: "Ventirads (air)", items: [
-    { id:"tour2", name:"Ventirad double tour (type NH-D15)", cap:250, price:110 },
-    { id:"tour1", name:"Ventirad tour (type Peerless Assassin)", cap:220, price:40 },
-    { id:"stock", name:"Ventirad d'origine (fourni avec CPU)", cap:95, price:0 },
+    { id:"cl-nhd15g2", name:"Noctua NH-D15 G2", cap:290, price:155 },
+    { id:"cl-nhd15", name:"Noctua NH-D15 chromax.black", cap:250, price:119 },
+    { id:"cl-darkrockpro5", name:"be quiet! Dark Rock Pro 5", cap:270, price:105 },
+    { id:"cl-darkrock5", name:"be quiet! Dark Rock 5", cap:210, price:75 },
+    { id:"cl-ak620", name:"DeepCool AK620 Digital", cap:240, price:65 },
+    { id:"cl-phantom", name:"Thermalright Phantom Spirit 120 SE", cap:245, price:45 },
+    { id:"cl-peerless", name:"Thermalright Peerless Assassin 120 SE", cap:220, price:39 },
+    { id:"cl-assassinx", name:"Thermalright Assassin X 120 R SE", cap:150, price:22 },
+    { id:"cl-stock", name:"Ventirad d'origine (fourni avec le CPU)", cap:95, price:0 },
+  ]},
+  { label: "Threadripper (sTR5)", items: [
+    { id:"cl-freezer4u", name:"ARCTIC Freezer 4U-M (sTR5)", cap:400, price:99 },
+    { id:"cl-nhu14s-tr5", name:"Noctua NH-U14S TR5-SP6", cap:360, price:135 },
   ]},
 ];
 const FAN_GROUPS = [
   { label: "Ventilation boîtier", items: [
-    { id:"f6", name:"6 ventilos 120 mm (flux optimal)", flow:3, price:55 },
-    { id:"f3", name:"3 ventilos 120 mm", flow:2, price:28 },
-    { id:"f0", name:"Ventilos fournis avec le boîtier", flow:1, price:0 },
+    { id:"f-arctic5", name:"ARCTIC P12 PWM PST (pack de 5)", flow:3, price:39 },
+    { id:"f-argb3", name:"Pack 3 ventilateurs ARGB 120 mm", flow:2, price:28 },
+    { id:"f-purewings3", name:"be quiet! Pure Wings 3 120 mm (x3)", flow:2, price:33 },
+    { id:"f-stock", name:"Ventilateurs fournis avec le boîtier", flow:1, price:0 },
   ]},
 ];
 const MB_GROUPS = [
@@ -663,6 +712,7 @@ const MB_GROUPS = [
     { id:"mb-x670proart", name:"ASUS ProArt X670E-Creator WiFi", socket:"AM5", ddr:"DDR5", price:449 },
     { id:"mb-x870tomahawk", name:"MSI MAG X870 Tomahawk WiFi", socket:"AM5", ddr:"DDR5", price:329 },
     { id:"mb-x870tuf", name:"ASUS TUF Gaming X870-Plus WiFi", socket:"AM5", ddr:"DDR5", price:299 },
+    { id:"mb-x870steel", name:"ASRock X870 Steel Legend WiFi", socket:"AM5", ddr:"DDR5", price:249 },
     { id:"mb-x670steel", name:"ASRock X670E Steel Legend", socket:"AM5", ddr:"DDR5", price:279 },
   ]},
   { label: "AM5 · milieu de gamme (B850 / B650)", items: [
@@ -723,26 +773,50 @@ const MB_GROUPS = [
     { id:"mb-h610mh", name:"Gigabyte H610M H DDR4", socket:"LGA1700", ddr:"DDR4", price:79 },
   ]},
   { label: "LGA1200 · Intel 10-11e gen (DDR4)", items: [
-    { id:"mb-z590strix", name:"ASUS ROG Strix Z590-E Gaming WiFi", socket:"LGA1200", ddr:"DDR4", price:199 },
-    { id:"mb-z590tomahawk", name:"MSI MAG Z590 Tomahawk WiFi", socket:"LGA1200", ddr:"DDR4", price:169 },
-    { id:"mb-b560aorus", name:"Gigabyte B560M Aorus Elite", socket:"LGA1200", ddr:"DDR4", price:109 },
-    { id:"mb-b460pro4", name:"ASRock B460M Pro4", socket:"LGA1200", ddr:"DDR4", price:89 },
-    { id:"mb-h510prime", name:"ASUS Prime H510M-K", socket:"LGA1200", ddr:"DDR4", price:69 },
+    { id:"mb-z590strix", used:true, name:"ASUS ROG Strix Z590-E Gaming WiFi", socket:"LGA1200", ddr:"DDR4", price:199 },
+    { id:"mb-z590tomahawk", used:true, name:"MSI MAG Z590 Tomahawk WiFi", socket:"LGA1200", ddr:"DDR4", price:169 },
+    { id:"mb-b560aorus", used:true, name:"Gigabyte B560M Aorus Elite", socket:"LGA1200", ddr:"DDR4", price:109 },
+    { id:"mb-b460pro4", used:true, name:"ASRock B460M Pro4", socket:"LGA1200", ddr:"DDR4", price:89 },
+    { id:"mb-h510prime", used:true, name:"ASUS Prime H510M-K", socket:"LGA1200", ddr:"DDR4", price:69 },
   ]},
   { label: "LGA1151 · Intel 9e gen (DDR4, occasion)", items: [
-    { id:"mb-z390strix", name:"ASUS ROG Strix Z390-E Gaming", socket:"LGA1151", ddr:"DDR4", price:149 },
-    { id:"mb-z390aorus", name:"Gigabyte Z390 Aorus Elite", socket:"LGA1151", ddr:"DDR4", price:119 },
-    { id:"mb-b365mortar", name:"MSI MAG B365M Mortar", socket:"LGA1151", ddr:"DDR4", price:89 },
-    { id:"mb-b360prime", name:"ASUS Prime B360M-A", socket:"LGA1151", ddr:"DDR4", price:75 },
-    { id:"mb-h310s2h", name:"Gigabyte H310M S2H", socket:"LGA1151", ddr:"DDR4", price:55 },
+    { id:"mb-z390strix", used:true, name:"ASUS ROG Strix Z390-E Gaming", socket:"LGA1151", ddr:"DDR4", price:149 },
+    { id:"mb-z390aorus", used:true, name:"Gigabyte Z390 Aorus Elite", socket:"LGA1151", ddr:"DDR4", price:119 },
+    { id:"mb-b365mortar", used:true, name:"MSI MAG B365M Mortar", socket:"LGA1151", ddr:"DDR4", price:89 },
+    { id:"mb-b360prime", used:true, name:"ASUS Prime B360M-A", socket:"LGA1151", ddr:"DDR4", price:75 },
+    { id:"mb-h310s2h", used:true, name:"Gigabyte H310M S2H", socket:"LGA1151", ddr:"DDR4", price:55 },
   ]},
 ];
 const CASE_GROUPS = [
-  { label: "Boîtiers", items: [
-    { id:"cbig", name:"Grand tour airflow (GPU 360 mm+)", fits:"large", mesh:true, price:130 },
-    { id:"cmid", name:"Moyen tour mesh (GPU 330 mm)", fits:"large", mesh:true, price:90 },
-    { id:"cmidv", name:"Moyen tour vitré fermé (GPU 330 mm)", fits:"large", mesh:false, price:85 },
-    { id:"csmall", name:"Compact mATX (GPU 280 mm max)", fits:"std", mesh:true, price:60 },
+  { label: "Boîtiers · entrée de gamme", items: [
+    { id:"c-forge100r", name:"MSI MAG Forge 100R", fits:"large", mesh:true, price:60 },
+    { id:"c-vsk4000", name:"Antec VSK4000E-U3", fits:"std", mesh:false, price:55 },
+    { id:"c-h3flow", name:"NZXT H3 Flow (mATX)", fits:"std", mesh:true, price:70 },
+    { id:"c-forge120a", name:"MSI MAG Forge 120A Airflow", fits:"large", mesh:true, price:75 },
+  ]},
+  { label: "Boîtiers · gaming (le meilleur rapport qualité/prix)", items: [
+    { id:"c-3000d", name:"Corsair 3000D Airflow", fits:"large", mesh:true, price:85 },
+    { id:"c-h5flow", name:"NZXT H5 Flow", fits:"large", mesh:true, price:89 },
+    { id:"c-xtpro", name:"Phanteks XT Pro Ultra", fits:"large", mesh:true, price:95 },
+    { id:"c-4000d", name:"Corsair 4000D Airflow", fits:"large", mesh:true, price:99 },
+    { id:"c-c5argb", name:"Antec C5 ARGB", fits:"large", mesh:true, price:90 },
+    { id:"c-purebase500dx", name:"be quiet! Pure Base 500DX", fits:"large", mesh:true, price:115 },
+    { id:"c-lancool216", name:"Lian Li Lancool 216", fits:"large", mesh:true, price:115 },
+    { id:"c-o11mini", name:"Lian Li O11 Dynamic Mini V2 Flow", fits:"large", mesh:true, price:125 },
+    { id:"c-h7flow", name:"NZXT H7 Flow", fits:"large", mesh:true, price:139 },
+  ]},
+  { label: "Boîtiers · premium", items: [
+    { id:"c-north", name:"Fractal Design North TG", fits:"large", mesh:true, price:149 },
+    { id:"c-meshify2", name:"Fractal Design Meshify 2", fits:"large", mesh:true, price:155 },
+    { id:"c-lancool3", name:"Lian Li Lancool III", fits:"large", mesh:true, price:165 },
+    { id:"c-5000d", name:"Corsair 5000D RGB Airflow", fits:"large", mesh:true, price:179 },
+    { id:"c-o11evo", name:"Lian Li O11 Dynamic EVO", fits:"large", mesh:false, price:189 },
+  ]},
+  { label: "Boîtiers · grand format (workstation)", items: [
+    { id:"c-northxl", name:"Fractal Design North XL TG", fits:"large", mesh:true, price:219 },
+    { id:"c-shadow800", name:"be quiet! Shadow Base 800 FX", fits:"large", mesh:true, price:229 },
+    { id:"c-o11xl", name:"Lian Li O11 Dynamic XL", fits:"large", mesh:false, price:239 },
+    { id:"c-7000d", name:"Corsair 7000D Airflow", fits:"large", mesh:true, price:259 },
   ]},
 ];
 
@@ -913,11 +987,11 @@ function Hot({ kind, label, onPick, children }) {
 }
 function PcView({ cpu, gpu, ram, ssd, cooler, fans, box, onPick }) {
   const gb = brandOf(gpu.name), cb = brandOf(cpu.name);
-  const H = box.fits === "std" ? 240 : box.id === "cbig" ? 300 : 280;
+  const H = box.fits === "std" ? 240 : box.price >= 200 ? 300 : 280;
   const W = 240;
   const gpuLen = gpu.size === "large" ? 150 : 110;
-  const isAio = cooler.id.startsWith("aio");
-  const aioW = cooler.id === "aio360" ? 120 : 84;
+  const isAio = cooler.cap >= 300 && /Liquid|Loop|Kraken|H150i|Nautilus|AIO/i.test(cooler.name);
+  const aioW = /420/.test(cooler.name) ? 130 : /360/.test(cooler.name) ? 120 : 84;
   const sticks = ram.gb >= 64 ? 4 : 2;
   const frontFans = Math.min(fans.flow + 1, 3);
   const ln = "#2C2C42", fill = "#0E0E16", metal = "#191926";
@@ -954,7 +1028,7 @@ function PcView({ cpu, gpu, ram, ssd, cooler, fans, box, onPick }) {
         {isAio ? (
           <g>
             <rect x={220 - aioW} y="18" width={aioW} height="16" rx="3" fill={metal} stroke="#5C6B8A" strokeWidth="1.4"/>
-            {[...Array(cooler.id === "aio360" ? 3 : 2)].map((_, i) => (
+            {[...Array(/360|420/.test(cooler.name) ? 3 : 2)].map((_, i) => (
               <circle key={i} cx={220 - aioW + 20 + i * 38} cy="26" r="6.5" fill="none" stroke="#5C6B8A" strokeWidth="1.2"/>
             ))}
             <path d={`M150 60 C 150 44, ${222 - aioW} 40, ${222 - aioW} 30`} fill="none" stroke="#5C6B8A" strokeWidth="2"/>
@@ -1081,15 +1155,26 @@ function suggestBuild(budget, profile = "gaming") {
   }[profile] || {};
   const under = (arr, cap) => arr.filter((x) => x.price <= cap).sort((a, b) => b.score - a.score)[0];
   const cheapest = (arr) => arr.slice().sort((a, b) => a.price - b.price)[0];
+  // Marges volontairement au-dessus des seuils d'alerte du diagnostic (1.3 pour
+  // l'alimentation, 1.1 pour le refroidissement) : une config proposée doit être
+  // montable telle quelle, sans avertissement à corriger.
   const psuFor = (gpu, cpu) => {
     const d = gpu.watts + cpu.tdp + 75;
-    return ALL_PSUS.slice().sort((a, b) => a.watts - b.watts).find((p) => p.watts >= d * 1.25)
+    return ALL_PSUS.slice().sort((a, b) => a.watts - b.watts || a.price - b.price).find((p) => p.watts >= d * 1.35)
         || ALL_PSUS.slice().sort((a, b) => b.watts - a.watts)[0];
   };
-  const coolerFor = (cpu) => ALL_COOLERS.slice().sort((a, b) => a.price - b.price).find((c) => c.cap >= cpu.tdp * 1.1)
+  const coolerFor = (cpu) => {
+    // Threadripper : refroidissement dédié sTR5 obligatoire
+    const pool = cpu.socket === "sTR5"
+      ? ALL_COOLERS.filter((c) => /sTR5|TR5/.test(c.name))
+      : ALL_COOLERS.filter((c) => !/sTR5|TR5/.test(c.name));
+    return pool.slice().sort((a, b) => a.price - b.price).find((c) => c.cap >= cpu.tdp * 1.2)
+        || pool.slice().sort((a, b) => b.cap - a.cap)[0]
         || ALL_COOLERS.slice().sort((a, b) => b.cap - a.cap)[0];
-  const fansFor = (gpu) => gpu.watts >= 300 ? ALL_FANS.find((f) => f.id === "f3") : ALL_FANS.find((f) => f.id === "f0");
-  const boxFor = (gpu) => gpu.size === "large" ? ALL_CASES.find((c) => c.id === "cmid") : ALL_CASES.find((c) => c.id === "csmall");
+  };
+  const fansFor = (gpu) => gpu.watts >= 300 ? ALL_FANS.find((f) => f.id === "f-argb3") : ALL_FANS.find((f) => f.id === "f-stock");
+  const boxFor = (gpu) => gpu.size === "large" ? ALL_CASES.find((c) => c.id === "c-3000d") : ALL_CASES.find((c) => c.id === "c-forge100r");
+  const fansNeeded = (gpu, box) => gpu.watts >= 300 ? ALL_FANS.find((f) => f.id === "f-argb3") : ALL_FANS.find((f) => f.id === "f-stock");
 
   let gpuPool = P.allowPro ? ALL_GPUS : ALL_GPUS.filter((g) => !g.pro);
   let cpuPool = P.allowPro ? ALL_CPUS : ALL_CPUS.filter((c) => !c.pro);
@@ -1131,11 +1216,11 @@ function suggestBuild(budget, profile = "gaming") {
       && (!r.ws || mb.socket === "sTR5")
       && (r.gb < 128 || ["sTR5", "AM5", "LGA1851", "LGA1700"].includes(mb.socket))
       && (r.mhz || 0) <= mhzCap)
-    .sort((a, b) => a.gb - b.gb || b.mhz - a.mhz);
+    .sort((a, b) => a.gb - b.gb || b.mhz - a.mhz || a.price - b.price);
   // Pour une capacité donnée, prendre la barrette la plus rapide compatible
-  const ramAt = (gb) => ramsType.filter((r) => r.gb === gb).sort((a, b) => b.mhz - a.mhz)[0];
+  const ramAt = (gb) => ramsType.filter((r) => r.gb === gb).sort((a, b) => b.mhz - a.mhz || a.price - b.price)[0];
   let ram = ramAt(P.ram) || ramsType.filter((r) => r.gb <= P.ram).pop() || ramsType[ramsType.length - 1];
-  let ssd = ALL_SSDS.find((s) => s.id === "n1");
+  let ssd = ALL_SSDS.find((s) => s.id === "s-p3plus1");
   let psu = psuFor(gpu, cpu), cooler = coolerFor(cpu), fans = fansFor(gpu), box = boxFor(gpu);
 
   const cost = () => cpu.price + gpu.price + mb.price + ram.price + ssd.price + psu.price + cooler.price + fans.price + box.price;
@@ -1151,6 +1236,15 @@ function suggestBuild(budget, profile = "gaming") {
     if (lc) { cpu = lc; cooler = coolerFor(cpu); psu = psuFor(gpu, cpu); continue; }
     break;
   }
+  // Sécuriser d'abord la mémoire cible du profil : une config chère avec trop peu
+  // de RAM n'a pas de sens, même si le GPU pourrait encore monter.
+  {
+    const target = ramAt(P.ram);
+    if (target && ram.gb < P.ram) {
+      const delta = target.price - ram.price;
+      if (cost() + delta <= budget) ram = target;
+    }
+  }
   // Réinvestir le reliquat dans le GPU (sauf bureautique : on ne gonfle pas le GPU)
   if (profile !== "bureautique") {
     const rank = (g) => profile === "workstation" ? P.gpuKey(g) : g.score;
@@ -1163,14 +1257,15 @@ function suggestBuild(budget, profile = "gaming") {
       if (cost() > budget) { gpu = prev.gpu; psu = prev.psu; fans = prev.fans; box = prev.box; break; }
     }
   }
-  // Réinvestir le reliquat : SSD, RAM, CPU (équilibré), refroidissement
+  // Réinvestir le reliquat : RAM d'abord (plus déterminante que le stockage),
+  // puis SSD, CPU (équilibré) et refroidissement
   guard = 0; let improved = true;
   while (improved && guard++ < 80) {
     improved = false;
+    const ramUp = ramsType.filter((r) => r.gb > ram.gb).sort((a, b) => a.gb - b.gb || a.price - b.price)[0];
+    if (ramUp && cost() - ram.price + ramUp.price <= budget) { ram = ramUp; improved = true; continue; }
     const ssdUp = ALL_SSDS.filter((x) => x.tb > ssd.tb).sort((a, b) => a.tb - b.tb)[0];
     if (ssdUp && cost() - ssd.price + ssdUp.price <= budget) { ssd = ssdUp; improved = true; continue; }
-    const ramUp = ramsType.filter((r) => r.gb > ram.gb).sort((a, b) => a.gb - b.gb)[0];
-    if (ramUp && cost() - ram.price + ramUp.price <= budget) { ram = ramUp; improved = true; continue; }
     const cpuUp = cpuPool.filter((c) => c.socket === mb.socket && c.score > cpu.score
         && (profile !== "gaming" || c.score / gpu.score <= 1.6)
         && (profile !== "bureautique" || !c.x3d))
@@ -1221,12 +1316,12 @@ export default function App() {
   const [editPart, setEditPart] = useState(null);
   const [cpu, setCpu] = useState(ALL_CPUS.find((c) => c.id === "7600"));
   const [gpu, setGpu] = useState(ALL_GPUS.find((g) => g.id === "5070"));
-  const [ram, setRam] = useState(ALL_RAMS.find((r) => r.id === "d5-32"));
-  const [ssd, setSsd] = useState(ALL_SSDS.find((s) => s.id === "n1"));
+  const [ram, setRam] = useState(ALL_RAMS.find((r) => r.id === "r-fury32-6000"));
+  const [ssd, setSsd] = useState(ALL_SSDS.find((s) => s.id === "s-p3plus1"));
   const [psu, setPsu] = useState(ALL_PSUS.find((p) => p.id === "p-rm750e"));
-  const [cooler, setCooler] = useState(ALL_COOLERS.find((c) => c.id === "tour1"));
-  const [fans, setFans] = useState(ALL_FANS.find((f) => f.id === "f0"));
-  const [box, setBox] = useState(ALL_CASES.find((c) => c.id === "cmid"));
+  const [cooler, setCooler] = useState(ALL_COOLERS.find((c) => c.id === "cl-peerless"));
+  const [fans, setFans] = useState(ALL_FANS.find((f) => f.id === "f-stock"));
+  const [box, setBox] = useState(ALL_CASES.find((c) => c.id === "c-3000d"));
   const [mb, setMb] = useState(ALL_MBS.find((m) => m.id === "mb-b650aorus"));
   const [res, setRes] = useState("1440p");
   const [shared, setShared] = useState(false);   // lien copié ?
@@ -1326,9 +1421,9 @@ export default function App() {
   if (page === "privacy") return <div className={`app ${dark ? "dark" : ""}`}><style>{css}</style><PrivacyPage onBack={() => setPage("sim")} /></div>;
 
   const picks = [
-    { label: "CPU", kind: "cpu", item: cpu, spec: `${cpu.cores} cœurs · ${cpu.socket}` },
-    { label: "GPU", kind: "gpu", item: gpu, spec: `${gpu.vram} Go${gpu.up ? " · " + gpu.up : ""}${gpu.upNext ? " · " + gpu.upNext + " à venir" : ""}${gpu.pro ? " · Pro" : ""}` },
-    { label: "C. MÈRE", kind: "mb", item: mb, spec: `${mb.socket} · ${mb.ddr}` },
+    { label: "CPU", kind: "cpu", item: cpu, spec: `${cpu.cores} cœurs · ${cpu.socket}${cpu.used ? " · occasion" : ""}` },
+    { label: "GPU", kind: "gpu", item: gpu, spec: `${gpu.vram} Go${gpu.up ? " · " + gpu.up : ""}${gpu.upNext ? " · " + gpu.upNext + " à venir" : ""}${gpu.pro ? " · Pro" : ""}${gpu.used ? " · occasion" : ""}` },
+    { label: "C. MÈRE", kind: "mb", item: mb, spec: `${mb.socket} · ${mb.ddr}${mb.used ? " · occasion" : ""}` },
     { label: "RAM", kind: "ram", item: ram, spec: ram.speed || ram.type },
     { label: "SSD", kind: "ssd", item: ssd, spec: null },
     { label: "ALIM", kind: "psu", item: psu, spec: `${psu.watts} W${psu.cert ? " · 80+ " + psu.cert : ""}` },
@@ -1466,7 +1561,7 @@ export default function App() {
         <div className="totals">
           <div>
             <span className="mono big">{total.toLocaleString("fr-FR")} €</span>
-            <span className="tiny">Budget estimé sur les prix moyens du marché. Cliquez pour voir le prix actuel. Anciennes générations : prix de l'occasion.</span>
+            <span className="tiny">Budget estimé sur les prix moyens du marché. Cliquez pour voir le prix actuel. Les composants marqués « occasion » ne se vendent plus neufs.</span>
           </div>
           <div className="score-block">
             <span className="mono big copper">{globalScore}<span className="score-max">/100</span></span>
