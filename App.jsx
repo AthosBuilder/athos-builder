@@ -647,61 +647,94 @@ const FAN_GROUPS = [
   ]},
 ];
 const MB_GROUPS = [
-  { label: "sTR5 · Threadripper (DDR5)", items: [
-    { id:"trx50", name:"Carte mère TRX50 (sTR5)", socket:"sTR5", ddr:"DDR5", price:750 },
-    { id:"wrx90", name:"Carte mère WRX90 (sTR5)", socket:"sTR5", ddr:"DDR5", price:1150 },
+  { label: "sTR5 · Threadripper workstation", items: [
+    { id:"mb-wrx90sage", name:"ASUS Pro WS WRX90E-SAGE SE", socket:"sTR5", ddr:"DDR5", price:1390 },
+    { id:"mb-trx50sage", name:"ASUS Pro WS TRX50-SAGE WiFi", socket:"sTR5", ddr:"DDR5", price:890 },
+    { id:"mb-trx50aorus", name:"Gigabyte TRX50 Aorus Master", socket:"sTR5", ddr:"DDR5", price:850 },
+    { id:"mb-trx50ws", name:"ASRock TRX50 WS", socket:"sTR5", ddr:"DDR5", price:790 },
   ]},
-  { label: "AM5 · Ryzen 7000/9000 (DDR5)", items: [
-    { id:"x870e", name:"Carte mère X870E (AM5)", socket:"AM5", ddr:"DDR5", price:330 },
-    { id:"x870", name:"Carte mère X870 (AM5)", socket:"AM5", ddr:"DDR5", price:250 },
-    { id:"x670e", name:"Carte mère X670E (AM5)", socket:"AM5", ddr:"DDR5", price:280 },
-    { id:"x670", name:"Carte mère X670 (AM5)", socket:"AM5", ddr:"DDR5", price:220 },
-    { id:"b850", name:"Carte mère B850 (AM5)", socket:"AM5", ddr:"DDR5", price:200 },
-    { id:"b650e", name:"Carte mère B650E (AM5)", socket:"AM5", ddr:"DDR5", price:180 },
-    { id:"b650", name:"Carte mère B650 (AM5)", socket:"AM5", ddr:"DDR5", price:150 },
-    { id:"b840", name:"Carte mère B840 (AM5)", socket:"AM5", ddr:"DDR5", price:120 },
-    { id:"a620", name:"Carte mère A620 (AM5)", socket:"AM5", ddr:"DDR5", price:95 },
+  { label: "AM5 · haut de gamme (X870 / X670)", items: [
+    { id:"mb-x870ehero", name:"ASUS ROG Crosshair X870E Hero", socket:"AM5", ddr:"DDR5", price:690 },
+    { id:"mb-x870estrix", name:"ASUS ROG Strix X870E-E Gaming WiFi", socket:"AM5", ddr:"DDR5", price:499 },
+    { id:"mb-x870emaster", name:"Gigabyte X870E Aorus Master", socket:"AM5", ddr:"DDR5", price:449 },
+    { id:"mb-x870ecarbon", name:"MSI MPG X870E Carbon WiFi", socket:"AM5", ddr:"DDR5", price:439 },
+    { id:"mb-x670emaster", name:"Gigabyte X670E Aorus Master", socket:"AM5", ddr:"DDR5", price:399 },
+    { id:"mb-x670estrix", name:"ASUS ROG Strix X670E-E Gaming WiFi", socket:"AM5", ddr:"DDR5", price:429 },
+    { id:"mb-x670proart", name:"ASUS ProArt X670E-Creator WiFi", socket:"AM5", ddr:"DDR5", price:449 },
+    { id:"mb-x870tomahawk", name:"MSI MAG X870 Tomahawk WiFi", socket:"AM5", ddr:"DDR5", price:329 },
+    { id:"mb-x870tuf", name:"ASUS TUF Gaming X870-Plus WiFi", socket:"AM5", ddr:"DDR5", price:299 },
+    { id:"mb-x670steel", name:"ASRock X670E Steel Legend", socket:"AM5", ddr:"DDR5", price:279 },
+  ]},
+  { label: "AM5 · milieu de gamme (B850 / B650)", items: [
+    { id:"mb-b850tomahawk", name:"MSI MAG B850 Tomahawk WiFi", socket:"AM5", ddr:"DDR5", price:249 },
+    { id:"mb-b650estrix", name:"ASUS ROG Strix B650E-F Gaming WiFi", socket:"AM5", ddr:"DDR5", price:269 },
+    { id:"mb-b850tuf", name:"ASUS TUF Gaming B850-Plus WiFi", socket:"AM5", ddr:"DDR5", price:229 },
+    { id:"mb-b850aorus", name:"Gigabyte B850 Aorus Elite WiFi7", socket:"AM5", ddr:"DDR5", price:219 },
+    { id:"mb-b650tomahawk", name:"MSI MAG B650 Tomahawk WiFi", socket:"AM5", ddr:"DDR5", price:209 },
+    { id:"mb-b650aorus", name:"Gigabyte B650 Aorus Elite AX", socket:"AM5", ddr:"DDR5", price:189 },
+    { id:"mb-b650prime", name:"ASUS Prime B650M-A WiFi", socket:"AM5", ddr:"DDR5", price:159 },
+    { id:"mb-b650mprors", name:"ASRock B650M Pro RS", socket:"AM5", ddr:"DDR5", price:129 },
+  ]},
+  { label: "AM5 · entrée de gamme (A620)", items: [
+    { id:"mb-a620gaming", name:"Gigabyte A620M Gaming X", socket:"AM5", ddr:"DDR5", price:99 },
+    { id:"mb-a620hdv", name:"ASRock A620M-HDV/M.2", socket:"AM5", ddr:"DDR5", price:85 },
   ]},
   { label: "AM4 · Ryzen 3000/5000 (DDR4)", items: [
-    { id:"x570s", name:"Carte mère X570S (AM4)", socket:"AM4", ddr:"DDR4", price:160 },
-    { id:"x570", name:"Carte mère X570 (AM4)", socket:"AM4", ddr:"DDR4", price:140 },
-    { id:"b550", name:"Carte mère B550 (AM4)", socket:"AM4", ddr:"DDR4", price:100 },
-    { id:"x470", name:"Carte mère X470 (AM4)", socket:"AM4", ddr:"DDR4", price:90 },
-    { id:"b450", name:"Carte mère B450 (AM4)", socket:"AM4", ddr:"DDR4", price:70 },
-    { id:"a320", name:"Carte mère A320 (AM4)", socket:"AM4", ddr:"DDR4", price:45 },
+    { id:"mb-x570strix", name:"ASUS ROG Strix X570-E Gaming", socket:"AM4", ddr:"DDR4", price:249 },
+    { id:"mb-x570saorus", name:"Gigabyte X570S Aorus Elite AX", socket:"AM4", ddr:"DDR4", price:199 },
+    { id:"mb-x570tomahawk", name:"MSI MAG X570 Tomahawk WiFi", socket:"AM4", ddr:"DDR4", price:179 },
+    { id:"mb-b550tomahawk", name:"MSI MAG B550 Tomahawk", socket:"AM4", ddr:"DDR4", price:149 },
+    { id:"mb-b550tuf", name:"ASUS TUF Gaming B550-Plus", socket:"AM4", ddr:"DDR4", price:139 },
+    { id:"mb-b550aorus", name:"Gigabyte B550 Aorus Elite AX V2", socket:"AM4", ddr:"DDR4", price:135 },
+    { id:"mb-b550mpro4", name:"ASRock B550M Pro4", socket:"AM4", ddr:"DDR4", price:89 },
+    { id:"mb-b450tomahawk", name:"MSI B450 Tomahawk Max II", socket:"AM4", ddr:"DDR4", price:85 },
+    { id:"mb-a520mk", name:"Gigabyte A520M K V2", socket:"AM4", ddr:"DDR4", price:59 },
   ]},
   { label: "LGA1851 · Core Ultra 200 (DDR5)", items: [
-    { id:"z890", name:"Carte mère Z890 (LGA1851)", socket:"LGA1851", ddr:"DDR5", price:260 },
-    { id:"b860", name:"Carte mère B860 (LGA1851)", socket:"LGA1851", ddr:"DDR5", price:160 },
-    { id:"h810", name:"Carte mère H810 (LGA1851)", socket:"LGA1851", ddr:"DDR5", price:95 },
-    { id:"w880", name:"Carte mère W880 station de travail (LGA1851)", socket:"LGA1851", ddr:"DDR5", price:340 },
+    { id:"mb-z890hero", name:"ASUS ROG Maximus Z890 Hero", socket:"LGA1851", ddr:"DDR5", price:649 },
+    { id:"mb-z890ace", name:"MSI MEG Z890 Ace", socket:"LGA1851", ddr:"DDR5", price:599 },
+    { id:"mb-z890master", name:"Gigabyte Z890 Aorus Master", socket:"LGA1851", ddr:"DDR5", price:499 },
+    { id:"mb-z890carbon", name:"MSI MPG Z890 Carbon WiFi", socket:"LGA1851", ddr:"DDR5", price:419 },
+    { id:"mb-z890strix", name:"ASUS ROG Strix Z890-A Gaming WiFi", socket:"LGA1851", ddr:"DDR5", price:399 },
+    { id:"mb-z890tuf", name:"ASUS TUF Gaming Z890-Plus WiFi", socket:"LGA1851", ddr:"DDR5", price:329 },
+    { id:"mb-w880proart", name:"ASUS Pro WS W880-ACE SE (workstation)", socket:"LGA1851", ddr:"DDR5", price:459 },
+    { id:"mb-b860tomahawk", name:"MSI MAG B860 Tomahawk WiFi", socket:"LGA1851", ddr:"DDR5", price:229 },
+    { id:"mb-b860aorus", name:"Gigabyte B860 Aorus Elite WiFi7", socket:"LGA1851", ddr:"DDR5", price:209 },
+    { id:"mb-b860prime", name:"ASUS Prime B860-Plus WiFi", socket:"LGA1851", ddr:"DDR5", price:199 },
+    { id:"mb-h810m", name:"ASRock H810M-H/M.2", socket:"LGA1851", ddr:"DDR5", price:109 },
   ]},
-  { label: "LGA1700 · Intel 12-14e gen", items: [
-    { id:"z790d5", name:"Carte mère Z790 DDR5 (LGA1700)", socket:"LGA1700", ddr:"DDR5", price:230 },
-    { id:"z790d4", name:"Carte mère Z790 DDR4 (LGA1700)", socket:"LGA1700", ddr:"DDR4", price:190 },
-    { id:"z690d5", name:"Carte mère Z690 DDR5 (LGA1700)", socket:"LGA1700", ddr:"DDR5", price:180 },
-    { id:"z690d4", name:"Carte mère Z690 DDR4 (LGA1700)", socket:"LGA1700", ddr:"DDR4", price:140 },
-    { id:"b760d5", name:"Carte mère B760 DDR5 (LGA1700)", socket:"LGA1700", ddr:"DDR5", price:140 },
-    { id:"b760d4", name:"Carte mère B760 DDR4 (LGA1700)", socket:"LGA1700", ddr:"DDR4", price:110 },
-    { id:"b660d5", name:"Carte mère B660 DDR5 (LGA1700)", socket:"LGA1700", ddr:"DDR5", price:120 },
-    { id:"b660d4", name:"Carte mère B660 DDR4 (LGA1700)", socket:"LGA1700", ddr:"DDR4", price:95 },
-    { id:"h670", name:"Carte mère H670 DDR4 (LGA1700)", socket:"LGA1700", ddr:"DDR4", price:100 },
-    { id:"h610", name:"Carte mère H610 DDR4 (LGA1700)", socket:"LGA1700", ddr:"DDR4", price:75 },
+  { label: "LGA1700 · Intel 12-14e gen (DDR5)", items: [
+    { id:"mb-z790hero", name:"ASUS ROG Maximus Z790 Hero", socket:"LGA1700", ddr:"DDR5", price:589 },
+    { id:"mb-z790carbon", name:"MSI MPG Z790 Carbon WiFi", socket:"LGA1700", ddr:"DDR5", price:389 },
+    { id:"mb-z790tomahawk", name:"MSI MAG Z790 Tomahawk WiFi", socket:"LGA1700", ddr:"DDR5", price:299 },
+    { id:"mb-z790aorus", name:"Gigabyte Z790 Aorus Elite AX", socket:"LGA1700", ddr:"DDR5", price:289 },
+    { id:"mb-z790tuf", name:"ASUS TUF Gaming Z790-Plus WiFi", socket:"LGA1700", ddr:"DDR5", price:279 },
+    { id:"mb-b760strix", name:"ASUS ROG Strix B760-F Gaming WiFi", socket:"LGA1700", ddr:"DDR5", price:249 },
+    { id:"mb-b760tomahawkd5", name:"MSI MAG B760 Tomahawk WiFi DDR5", socket:"LGA1700", ddr:"DDR5", price:199 },
+    { id:"mb-b760aorusd5", name:"Gigabyte B760 Aorus Elite AX DDR5", socket:"LGA1700", ddr:"DDR5", price:189 },
+    { id:"mb-b760primed5", name:"ASUS Prime B760M-A WiFi DDR5", socket:"LGA1700", ddr:"DDR5", price:149 },
+  ]},
+  { label: "LGA1700 · Intel 12-14e gen (DDR4)", items: [
+    { id:"mb-z790prod4", name:"MSI PRO Z790-A WiFi DDR4", socket:"LGA1700", ddr:"DDR4", price:229 },
+    { id:"mb-z790udd4", name:"Gigabyte Z790 UD AC DDR4", socket:"LGA1700", ddr:"DDR4", price:199 },
+    { id:"mb-b760tomahawkd4", name:"MSI MAG B760 Tomahawk WiFi DDR4", socket:"LGA1700", ddr:"DDR4", price:179 },
+    { id:"mb-b660mhdv", name:"ASRock B660M-HDV DDR4", socket:"LGA1700", ddr:"DDR4", price:99 },
+    { id:"mb-b760primed4", name:"ASUS Prime B760M-K DDR4", socket:"LGA1700", ddr:"DDR4", price:119 },
+    { id:"mb-h610mh", name:"Gigabyte H610M H DDR4", socket:"LGA1700", ddr:"DDR4", price:79 },
   ]},
   { label: "LGA1200 · Intel 10-11e gen (DDR4)", items: [
-    { id:"z590", name:"Carte mère Z590 (LGA1200)", socket:"LGA1200", ddr:"DDR4", price:120 },
-    { id:"z490", name:"Carte mère Z490 (LGA1200)", socket:"LGA1200", ddr:"DDR4", price:100 },
-    { id:"b560", name:"Carte mère B560 (LGA1200)", socket:"LGA1200", ddr:"DDR4", price:80 },
-    { id:"b460", name:"Carte mère B460 (LGA1200)", socket:"LGA1200", ddr:"DDR4", price:65 },
-    { id:"h510", name:"Carte mère H510 (LGA1200)", socket:"LGA1200", ddr:"DDR4", price:55 },
-    { id:"h410", name:"Carte mère H410 (LGA1200)", socket:"LGA1200", ddr:"DDR4", price:45 },
+    { id:"mb-z590strix", name:"ASUS ROG Strix Z590-E Gaming WiFi", socket:"LGA1200", ddr:"DDR4", price:199 },
+    { id:"mb-z590tomahawk", name:"MSI MAG Z590 Tomahawk WiFi", socket:"LGA1200", ddr:"DDR4", price:169 },
+    { id:"mb-b560aorus", name:"Gigabyte B560M Aorus Elite", socket:"LGA1200", ddr:"DDR4", price:109 },
+    { id:"mb-b460pro4", name:"ASRock B460M Pro4", socket:"LGA1200", ddr:"DDR4", price:89 },
+    { id:"mb-h510prime", name:"ASUS Prime H510M-K", socket:"LGA1200", ddr:"DDR4", price:69 },
   ]},
   { label: "LGA1151 · Intel 9e gen (DDR4, occasion)", items: [
-    { id:"z390", name:"Carte mère Z390 (LGA1151)", socket:"LGA1151", ddr:"DDR4", price:100 },
-    { id:"z370", name:"Carte mère Z370 (LGA1151)", socket:"LGA1151", ddr:"DDR4", price:80 },
-    { id:"b365", name:"Carte mère B365 (LGA1151)", socket:"LGA1151", ddr:"DDR4", price:65 },
-    { id:"b360", name:"Carte mère B360 (LGA1151)", socket:"LGA1151", ddr:"DDR4", price:55 },
-    { id:"h310", name:"Carte mère H310 (LGA1151)", socket:"LGA1151", ddr:"DDR4", price:40 },
+    { id:"mb-z390strix", name:"ASUS ROG Strix Z390-E Gaming", socket:"LGA1151", ddr:"DDR4", price:149 },
+    { id:"mb-z390aorus", name:"Gigabyte Z390 Aorus Elite", socket:"LGA1151", ddr:"DDR4", price:119 },
+    { id:"mb-b365mortar", name:"MSI MAG B365M Mortar", socket:"LGA1151", ddr:"DDR4", price:89 },
+    { id:"mb-b360prime", name:"ASUS Prime B360M-A", socket:"LGA1151", ddr:"DDR4", price:75 },
+    { id:"mb-h310s2h", name:"Gigabyte H310M S2H", socket:"LGA1151", ddr:"DDR4", price:55 },
   ]},
 ];
 const CASE_GROUPS = [
@@ -1194,7 +1227,7 @@ export default function App() {
   const [cooler, setCooler] = useState(ALL_COOLERS.find((c) => c.id === "tour1"));
   const [fans, setFans] = useState(ALL_FANS.find((f) => f.id === "f0"));
   const [box, setBox] = useState(ALL_CASES.find((c) => c.id === "cmid"));
-  const [mb, setMb] = useState(ALL_MBS.find((m) => m.id === "b650"));
+  const [mb, setMb] = useState(ALL_MBS.find((m) => m.id === "mb-b650aorus"));
   const [res, setRes] = useState("1440p");
   const [shared, setShared] = useState(false);   // lien copié ?
   const [booting, setBooting] = useState(true);   // effet d'ouverture TV
@@ -1433,7 +1466,7 @@ export default function App() {
         <div className="totals">
           <div>
             <span className="mono big">{total.toLocaleString("fr-FR")} €</span>
-            <span className="tiny">prix marché juillet 2026. La mémoire et le stockage sont au plus haut à cause de la pénurie DRAM. Anciennes générations : prix de l'occasion.</span>
+            <span className="tiny">Budget estimé sur les prix moyens du marché. Cliquez pour voir le prix actuel. Anciennes générations : prix de l'occasion.</span>
           </div>
           <div className="score-block">
             <span className="mono big copper">{globalScore}<span className="score-max">/100</span></span>
