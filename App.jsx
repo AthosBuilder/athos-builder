@@ -342,10 +342,18 @@ section[id]{scroll-margin-top:16px}
    ════════════════════════════════════════════════════════ */
 const AFFILIATE = { amazonTag: "athosbuilder-21" };
 const HAS_AFFILIATE = AFFILIATE.amazonTag.trim().length > 0;
-function affLink(productName) {
-  const q = encodeURIComponent(productName);
-  const tag = AFFILIATE.amazonTag ? `&tag=${AFFILIATE.amazonTag}` : "";
-  return `https://www.amazon.fr/s?k=${q}${tag}`;
+// Lien Amazon. Si l'article a un ASIN renseigné, on pointe directement sur sa fiche
+// produit (lien précis). Sinon, on fait une recherche restreinte à l'informatique,
+// ce qui place le modèle exact en tête et évite les résultats hors sujet.
+function affLink(product) {
+  const tagParam = AFFILIATE.amazonTag ? `tag=${AFFILIATE.amazonTag}` : "";
+  const asin = typeof product === "object" ? product.asin : null;
+  const name = typeof product === "object" ? product.name : product;
+  if (asin) {
+    return `https://www.amazon.fr/dp/${asin}${tagParam ? "?" + tagParam : ""}`;
+  }
+  const q = encodeURIComponent(name);
+  return `https://www.amazon.fr/s?k=${q}&i=computers${tagParam ? "&" + tagParam : ""}`;
 }
 
 /* ── Marques & visuels SVG ─────────────────────────── */
@@ -589,16 +597,33 @@ const SSD_GROUPS = [
   ]},
 ];
 const PSU_GROUPS = [
-  { label: "Alimentations (80+ certifiées)", items: [
-    { id:"p2000", name:"Alimentation 2000 W Titanium", watts:2000, price:600 },
-    { id:"p1600", name:"Alimentation 1600 W Platinum", watts:1600, price:420 },
-    { id:"p1300", name:"Alimentation 1300 W Platinum", watts:1300, price:290 },
-    { id:"p1200", name:"Alimentation 1200 W Platinum", watts:1200, price:250 },
-    { id:"p1000", name:"Alimentation 1000 W Gold", watts:1000, price:180 },
-    { id:"p850", name:"Alimentation 850 W Gold", watts:850, price:130 },
-    { id:"p750", name:"Alimentation 750 W Gold", watts:750, price:100 },
-    { id:"p650", name:"Alimentation 650 W Bronze", watts:650, price:70 },
-    { id:"p550", name:"Alimentation 550 W Bronze", watts:550, price:55 },
+  { label: "Très haute puissance (workstation, RTX 5090)", items: [
+    { id:"p-tx1600", name:"Seasonic PRIME TX-1600", watts:1600, price:449, cert:"Titanium" },
+    { id:"p-hx1500i", name:"Corsair HX1500i", watts:1500, price:289, cert:"Platinum" },
+    { id:"p-dpp13", name:"be quiet! Dark Power Pro 13 1300W", watts:1300, price:329, cert:"Titanium" },
+    { id:"p-hx1200", name:"Corsair HX1200", watts:1200, price:229, cert:"Platinum" },
+  ]},
+  { label: "Haut de gamme (1000 W)", items: [
+    { id:"p-rm1000x", name:"Corsair RM1000x", watts:1000, price:149, cert:"Gold" },
+    { id:"p-pp13m1000", name:"be quiet! Pure Power 13 M 1000W", watts:1000, price:159, cert:"Gold" },
+  ]},
+  { label: "Gaming (850 W)", items: [
+    { id:"p-rm850x", name:"Corsair RM850x Shift", watts:850, price:149, cert:"Platinum" },
+    { id:"p-rm850e", name:"Corsair RM850e", watts:850, price:120, cert:"Gold" },
+    { id:"p-gx850", name:"Seasonic FOCUS GX-850", watts:850, price:129, cert:"Gold" },
+    { id:"p-pp13m850", name:"be quiet! Pure Power 13 M 850W", watts:850, price:135, cert:"Gold" },
+    { id:"p-c850", name:"NZXT C850 Gold", watts:850, price:119, cert:"Gold" },
+  ]},
+  { label: "Milieu de gamme (650-750 W)", items: [
+    { id:"p-rm750e", name:"Corsair RM750e", watts:750, price:104, cert:"Gold" }, // asin:"XXXX" à compléter
+    { id:"p-gx750", name:"Seasonic FOCUS GX-750", watts:750, price:109, cert:"Gold" },
+    { id:"p-pp13m750", name:"be quiet! Pure Power 13 M 750W", watts:750, price:115, cert:"Gold" },
+    { id:"p-rm650e", name:"Corsair RM650e", watts:650, price:99, cert:"Gold" },
+    { id:"p-a650gls", name:"MSI MAG A650GLS", watts:650, price:75, cert:"Gold" },
+  ]},
+  { label: "Entrée de gamme (550 W)", items: [
+    { id:"p-vero550", name:"Endorfy Vero L6 550W", watts:550, price:50, cert:"Bronze" },
+    { id:"p-sp10-550", name:"be quiet! System Power 10 550W", watts:550, price:59, cert:"Bronze" },
   ]},
 ];
 const COOLER_GROUPS = [
@@ -1165,7 +1190,7 @@ export default function App() {
   const [gpu, setGpu] = useState(ALL_GPUS.find((g) => g.id === "5070"));
   const [ram, setRam] = useState(ALL_RAMS.find((r) => r.id === "d5-32"));
   const [ssd, setSsd] = useState(ALL_SSDS.find((s) => s.id === "n1"));
-  const [psu, setPsu] = useState(ALL_PSUS.find((p) => p.id === "p750"));
+  const [psu, setPsu] = useState(ALL_PSUS.find((p) => p.id === "p-rm750e"));
   const [cooler, setCooler] = useState(ALL_COOLERS.find((c) => c.id === "tour1"));
   const [fans, setFans] = useState(ALL_FANS.find((f) => f.id === "f0"));
   const [box, setBox] = useState(ALL_CASES.find((c) => c.id === "cmid"));
@@ -1273,7 +1298,7 @@ export default function App() {
     { label: "C. MÈRE", kind: "mb", item: mb, spec: `${mb.socket} · ${mb.ddr}` },
     { label: "RAM", kind: "ram", item: ram, spec: ram.speed || ram.type },
     { label: "SSD", kind: "ssd", item: ssd, spec: null },
-    { label: "ALIM", kind: "psu", item: psu, spec: `${psu.watts} W` },
+    { label: "ALIM", kind: "psu", item: psu, spec: `${psu.watts} W${psu.cert ? " · 80+ " + psu.cert : ""}` },
     { label: "REFROID.", kind: "cooler", item: cooler, spec: null },
     { label: "VENTILOS", kind: "fan", item: fans, spec: null },
     { label: "BOÎTIER", kind: "case", item: box, spec: null },
@@ -1380,7 +1405,7 @@ export default function App() {
                   <b>{p.item.name}</b>
                 </span>
               </span>
-              {p.item.price > 0 && <AffButton product={p.item.name} />}
+              {p.item.price > 0 && <AffButton product={p.item} />}
             </li>
           ))}
         </ul>
