@@ -345,18 +345,22 @@ const HAS_AFFILIATE = AFFILIATE.amazonTag.trim().length > 0;
 // Lien Amazon. Si l'article a un ASIN renseigné, on pointe directement sur sa fiche
 // produit (lien précis). Sinon, on fait une recherche restreinte à l'informatique,
 // ce qui place le modèle exact en tête et évite les résultats hors sujet.
-function affLink(product) {
+function affLink(product, kind) {
   const tagParam = AFFILIATE.amazonTag ? `tag=${AFFILIATE.amazonTag}` : "";
   const asin = typeof product === "object" ? product.asin : null;
   const name = typeof product === "object" ? product.name : product;
-  // Composants qui ne se vendent plus neufs : on oriente la recherche vers
-  // les offres d'occasion et reconditionnées plutôt que vers du stock inexistant.
   const isUsed = typeof product === "object" && product.used;
+  // Lien direct si l'ASIN est connu (le plus précis).
   if (asin) {
     return `https://www.amazon.fr/dp/${asin}${tagParam ? "?" + tagParam : ""}`;
   }
-  const q = encodeURIComponent(isUsed ? `${name} occasion reconditionné` : name);
-  return `https://www.amazon.fr/s?k=${q}&i=computers${tagParam ? "&" + tagParam : ""}`;
+  // Sinon, recherche enrichie d'un mot-clé de catégorie : un nom seul comme
+  // "RTX 5090" ramène des accessoires "compatibles", pas la carte elle-même.
+  const hint = { gpu: "carte graphique", cpu: "processeur", mb: "carte mère",
+    ram: "mémoire ram", ssd: "ssd", psu: "alimentation", cooler: "ventirad watercooling",
+    box: "boîtier pc", fans: "ventilateur pc" }[kind] || "";
+  const base = isUsed ? `${name} ${hint} occasion reconditionné` : `${name} ${hint}`;
+  return `https://www.amazon.fr/s?k=${encodeURIComponent(base.trim())}&i=computers${tagParam ? "&" + tagParam : ""}`;
 }
 
 /* ── Marques & visuels SVG ─────────────────────────── */
@@ -391,12 +395,12 @@ function Icon({ kind, name }) {
    watts = conso jeu typique · size: std | large ── */
 const GPU_GROUPS = [
   { label: "NVIDIA · RTX 50 (2025-26)", items: [
-    { id:"5090", name:"RTX 5090", vram:32, score:100, price:3499, watts:575, size:"large" },
+    { id:"5090", name:"RTX 5090", vram:32, score:100, price:4099, watts:575, size:"large" },
     { id:"5080", name:"RTX 5080", vram:16, score:78, price:1199, watts:360, size:"large" },
-    { id:"5070ti", name:"RTX 5070 Ti", vram:16, score:70, price:949, watts:300, size:"large" },
-    { id:"5070", name:"RTX 5070", vram:12, score:58, price:599, watts:250, size:"std" },
-    { id:"5060ti", name:"RTX 5060 Ti 16 Go", vram:16, score:45, price:539, watts:180, size:"std" },
-    { id:"5060", name:"RTX 5060", vram:8, score:38, price:349, watts:145, size:"std" },
+    { id:"5070ti", name:"RTX 5070 Ti", vram:16, score:70, price:879, watts:300, size:"large" },
+    { id:"5070", name:"RTX 5070", vram:12, score:58, price:649, watts:250, size:"std" },
+    { id:"5060ti", name:"RTX 5060 Ti 16 Go", vram:16, score:45, price:569, watts:180, size:"std" },
+    { id:"5060", name:"RTX 5060", vram:8, score:38, price:329, watts:145, size:"std" },
     { id:"5050", name:"RTX 5050", vram:8, score:30, price:259, watts:130, size:"std" },
   ]},
   { label: "NVIDIA · RTX 40 (2022-24)", items: [
@@ -437,18 +441,18 @@ const GPU_GROUPS = [
     { id:"1650", used:true, name:"GTX 1650", vram:4, score:14, price:90, watts:75, size:"std" },
   ]},
   { label: "AMD · RX 9000 (2025-26)", items: [
-    { id:"9070xt", name:"RX 9070 XT", vram:16, score:66, price:655, watts:305, size:"large" },
-    { id:"9070", name:"RX 9070", vram:16, score:58, price:569, watts:220, size:"std" },
-    { id:"9060xt", name:"RX 9060 XT 16 Go", vram:16, score:44, price:419, watts:180, size:"std" },
+    { id:"9070xt", name:"RX 9070 XT", vram:16, score:66, price:699, watts:305, size:"large" },
+    { id:"9070", name:"RX 9070", vram:16, score:58, price:629, watts:220, size:"std" },
+    { id:"9060xt", name:"RX 9060 XT 16 Go", vram:16, score:44, price:449, watts:180, size:"std" },
   ]},
   { label: "AMD · RX 7000 (2022-24)", items: [
-    { id:"7900xtx", name:"RX 7900 XTX", vram:24, score:70, price:900, watts:355, size:"large" },
-    { id:"7900xt", name:"RX 7900 XT", vram:20, score:63, price:720, watts:315, size:"large" },
+    { id:"7900xtx", name:"RX 7900 XTX", vram:24, score:70, price:1299, watts:355, size:"large" },
+    { id:"7900xt", name:"RX 7900 XT", vram:20, score:63, price:699, watts:315, size:"large" },
     { id:"7900gre", name:"RX 7900 GRE", vram:16, score:57, price:580, watts:260, size:"std" },
-    { id:"7800xt", name:"RX 7800 XT", vram:16, score:53, price:490, watts:263, size:"std" },
-    { id:"7700xt", name:"RX 7700 XT", vram:12, score:46, price:400, watts:245, size:"std" },
-    { id:"7600xt", name:"RX 7600 XT", vram:16, score:36, price:320, watts:190, size:"std" },
-    { id:"7600", name:"RX 7600", vram:8, score:34, price:260, watts:165, size:"std" },
+    { id:"7800xt", name:"RX 7800 XT", vram:16, score:53, price:749, watts:263, size:"std" },
+    { id:"7700xt", name:"RX 7700 XT", vram:12, score:46, price:565, watts:245, size:"std" },
+    { id:"7600xt", name:"RX 7600 XT", vram:16, score:36, price:571, watts:190, size:"std" },
+    { id:"7600", name:"RX 7600", vram:8, score:34, price:289, watts:165, size:"std" },
   ]},
   { label: "AMD · RX 6000 (2020-22)", items: [
     { id:"6950xt", name:"RX 6950 XT", vram:16, score:61, price:550, watts:335, size:"large" },
@@ -479,7 +483,7 @@ const GPU_GROUPS = [
     { id:"w7800", name:"Radeon PRO W7800", vram:32, score:56, price:2500, watts:260, size:"std", pro:true, compute:52 },
   ]},
   { label: "Intel · Arc (2022-25)", items: [
-    { id:"b580", name:"Arc B580", vram:12, score:36, price:319, watts:190, size:"std" },
+    { id:"b580", name:"Arc B580", vram:12, score:36, price:347, watts:190, size:"std" },
     { id:"b570", name:"Arc B570", vram:10, score:32, price:269, watts:150, size:"std" },
     { id:"a770", name:"Arc A770 16 Go", vram:16, score:31, price:250, watts:225, size:"std" },
     { id:"a750", name:"Arc A750", vram:8, score:28, price:200, watts:225, size:"std" },
@@ -492,16 +496,16 @@ const GPU_GROUPS = [
    ddr: type mémoire supporté · tdp = charge réelle (dimensionnement ventirad) ── */
 const CPU_GROUPS = [
   { label: "AMD · Ryzen 9000 (2024-25)", items: [
-    { id:"9950x3d", name:"Ryzen 9 9950X3D", cores:16, score:98, price:780, ddr:"DDR5", tdp:200, socket:"AM5" },
-    { id:"9800x3d", name:"Ryzen 7 9800X3D", cores:8, score:100, price:409, ddr:"DDR5", tdp:160, socket:"AM5" },
-    { id:"9950x", name:"Ryzen 9 9950X", cores:16, score:82, price:650, ddr:"DDR5", tdp:230, socket:"AM5" },
-    { id:"9900x", name:"Ryzen 9 9900X", cores:12, score:80, price:470, ddr:"DDR5", tdp:160, socket:"AM5" },
-    { id:"9700x", name:"Ryzen 7 9700X", cores:8, score:77, price:360, ddr:"DDR5", tdp:110, socket:"AM5" },
-    { id:"9600x", name:"Ryzen 5 9600X", cores:6, score:74, price:280, ddr:"DDR5", tdp:110, socket:"AM5" },
+    { id:"9950x3d", name:"Ryzen 9 9950X3D", cores:16, score:98, price:619, ddr:"DDR5", tdp:200, socket:"AM5" },
+    { id:"9800x3d", name:"Ryzen 7 9800X3D", cores:8, score:100, price:429, ddr:"DDR5", tdp:160, socket:"AM5" },
+    { id:"9950x", name:"Ryzen 9 9950X", cores:16, score:82, price:495, ddr:"DDR5", tdp:230, socket:"AM5" },
+    { id:"9900x", name:"Ryzen 9 9900X", cores:12, score:80, price:367, ddr:"DDR5", tdp:160, socket:"AM5" },
+    { id:"9700x", name:"Ryzen 7 9700X", cores:8, score:77, price:310, ddr:"DDR5", tdp:110, socket:"AM5" },
+    { id:"9600x", name:"Ryzen 5 9600X", cores:6, score:74, price:230, ddr:"DDR5", tdp:110, socket:"AM5" },
   ]},
   { label: "AMD · Ryzen 7000 (2022-23)", items: [
     { id:"7950x3d", name:"Ryzen 9 7950X3D", cores:16, score:90, price:620, ddr:"DDR5", tdp:162, socket:"AM5" },
-    { id:"7800x3d", name:"Ryzen 7 7800X3D", cores:8, score:92, price:420, ddr:"DDR5", tdp:120, socket:"AM5" },
+    { id:"7800x3d", name:"Ryzen 7 7800X3D", cores:8, score:92, price:346, ddr:"DDR5", tdp:120, socket:"AM5" },
     { id:"7950x", name:"Ryzen 9 7950X", cores:16, score:78, price:520, ddr:"DDR5", tdp:230, socket:"AM5" },
     { id:"7900x", name:"Ryzen 9 7900X", cores:12, score:76, price:400, ddr:"DDR5", tdp:230, socket:"AM5" },
     { id:"7700x", name:"Ryzen 7 7700X", cores:8, score:73, price:300, ddr:"DDR5", tdp:142, socket:"AM5" },
@@ -538,9 +542,9 @@ const CPU_GROUPS = [
     { id:"245k", name:"Core Ultra 5 245K", cores:14, score:75, price:300, ddr:"DDR5", tdp:159, socket:"LGA1851" },
   ]},
   { label: "Intel · 13e / 14e gen (2022-24)", items: [
-    { id:"14900k", name:"i9-14900K", cores:24, score:87, price:480, ddr:"DDR4/DDR5", tdp:253, socket:"LGA1700" },
-    { id:"14700k", name:"i7-14700K", cores:20, score:82, price:380, ddr:"DDR4/DDR5", tdp:253, socket:"LGA1700" },
-    { id:"14600k", name:"i5-14600K", cores:14, score:76, price:280, ddr:"DDR4/DDR5", tdp:181, socket:"LGA1700" },
+    { id:"14900k", name:"i9-14900K", cores:24, score:87, price:503, ddr:"DDR4/DDR5", tdp:253, socket:"LGA1700" },
+    { id:"14700k", name:"i7-14700K", cores:20, score:82, price:403, ddr:"DDR4/DDR5", tdp:253, socket:"LGA1700" },
+    { id:"14600k", name:"i5-14600K", cores:14, score:76, price:270, ddr:"DDR4/DDR5", tdp:181, socket:"LGA1700" },
     { id:"14400f", name:"i5-14400F", cores:10, score:66, price:180, ddr:"DDR4/DDR5", tdp:148, socket:"LGA1700" },
     { id:"13900k", name:"i9-13900K", cores:24, score:85, price:420, ddr:"DDR4/DDR5", tdp:253, socket:"LGA1700" },
     { id:"13700k", name:"i7-13700K", cores:16, score:80, price:330, ddr:"DDR4/DDR5", tdp:253, socket:"LGA1700" },
@@ -1101,9 +1105,9 @@ function GroupSelect({ label, groups, items, value, onChange, fmt, searchable })
     </label>
   );
 }
-function AffButton({ product }) {
+function AffButton({ product, kind }) {
   return (
-    <a className="aff-btn" href={affLink(product)} target="_blank" rel="sponsored noopener noreferrer">
+    <a className="aff-btn" href={affLink(product, kind)} target="_blank" rel="sponsored noopener noreferrer">
       Voir le prix →
     </a>
   );
@@ -1529,7 +1533,7 @@ export default function App() {
                   <b>{p.item.name}</b>
                 </span>
               </span>
-              {p.item.price > 0 && <AffButton product={p.item} />}
+              {p.item.price > 0 && <AffButton product={p.item} kind={p.kind} />}
             </li>
           ))}
         </ul>
