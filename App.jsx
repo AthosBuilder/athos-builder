@@ -357,9 +357,17 @@ function affLink(product, kind) {
   // Sinon, recherche enrichie d'un mot-clé de catégorie : un nom seul comme
   // "RTX 5090" ramène des accessoires "compatibles", pas la carte elle-même.
   const hint = { gpu: "carte graphique", cpu: "processeur", mb: "carte mère",
-    ram: "mémoire ram", ssd: "ssd", psu: "alimentation", cooler: "ventirad watercooling",
-    box: "boîtier pc", fans: "ventilateur pc" }[kind] || "";
-  const base = isUsed ? `${name} ${hint} occasion reconditionné` : `${name} ${hint}`;
+    ram: "kit mémoire ddr", ssd: "ssd", psu: "alimentation pc",
+    cooler: "refroidissement processeur", case: "boîtier pc", fan: "ventilateur boîtier" }[kind] || "";
+  // Pour les GPU, préfixer la gamme commerciale resserre nettement la recherche :
+  // "RTX 5070 Ti" seul remonte aussi les RTX 5070 simples.
+  let label = name;
+  if (kind === "gpu") {
+    if (/^RTX/.test(name)) label = `NVIDIA GeForce ${name}`;
+    else if (/^RX /.test(name)) label = `AMD Radeon ${name}`;
+    else if (/^Arc/.test(name)) label = `Intel ${name}`;
+  }
+  const base = isUsed ? `${label} ${hint} occasion reconditionné` : `${label} ${hint}`;
   return `https://www.amazon.fr/s?k=${encodeURIComponent(base.trim())}&i=computers${tagParam ? "&" + tagParam : ""}`;
 }
 
@@ -572,32 +580,32 @@ const CPU_GROUPS = [
 
 const RAM_GROUPS = [
   { label: "DDR5 · 16 Go (budget serré)", items: [
-    { id:"r-fury16-6000", name:"Kingston FURY Beast 16 Go (2x8) DDR5-6000 CL36", gb:16, type:"DDR5", mhz:6000, speed:"6000 MHz", price:215 },
-    { id:"r-veng16-5600", name:"Corsair Vengeance 16 Go (2x8) DDR5-5600 CL36", gb:16, type:"DDR5", mhz:5600, speed:"5600 MHz", price:195 },
+    { id:"r-fury16-6000", name:"Kingston FURY Beast 16 Go (2x8) DDR5-6000 CL36", gb:16, type:"DDR5", mhz:6000, speed:"6000 MHz", price:239 },
+    { id:"r-veng16-5600", name:"Corsair Vengeance 16 Go (2x8) DDR5-5600 CL36", gb:16, type:"DDR5", mhz:5600, speed:"5600 MHz", price:219 },
   ]},
   { label: "DDR5 · 32 Go (référence gaming)", items: [
-    { id:"r-fury32-5600", name:"Kingston FURY Beast RGB 32 Go (2x16) DDR5-5600 CL40", gb:32, type:"DDR5", mhz:5600, speed:"5600 MHz", price:249 },
-    { id:"r-veng32-5600", name:"Corsair Vengeance 32 Go (2x16) DDR5-5600 CL40", gb:32, type:"DDR5", mhz:5600, speed:"5600 MHz", price:339 },
-    { id:"r-fury32-6000", name:"Kingston FURY Beast 32 Go (2x16) DDR5-6000 CL30", gb:32, type:"DDR5", mhz:6000, speed:"6000 MHz", price:399 },
-    { id:"r-veng32-6000", name:"Corsair Vengeance 32 Go (2x16) DDR5-6000 CL36", gb:32, type:"DDR5", mhz:6000, speed:"6000 MHz", price:409 },
-    { id:"r-flare32-6000", name:"G.Skill Flare X5 32 Go (2x16) DDR5-6000 CL36 EXPO", gb:32, type:"DDR5", mhz:6000, speed:"6000 MHz", price:419 },
-    { id:"r-tz32-6000", name:"G.Skill Trident Z5 Neo RGB 32 Go DDR5-6000 CL30", gb:32, type:"DDR5", mhz:6000, speed:"6000 MHz", price:519 },
-    { id:"r-veng32-6400", name:"Corsair Vengeance RGB 32 Go (2x16) DDR5-6400 CL36", gb:32, type:"DDR5", mhz:6400, speed:"6400 MHz", price:459 },
+    { id:"r-fury32-5600", name:"Kingston FURY Beast RGB 32 Go (2x16) DDR5-5600 CL40", gb:32, type:"DDR5", mhz:5600, speed:"5600 MHz", price:349 },
+    { id:"r-veng32-5600", name:"Corsair Vengeance 32 Go (2x16) DDR5-5600 CL40", gb:32, type:"DDR5", mhz:5600, speed:"5600 MHz", price:365 },
+    { id:"r-fury32-6000", name:"Kingston FURY Beast 32 Go (2x16) DDR5-6000 CL30", gb:32, type:"DDR5", mhz:6000, speed:"6000 MHz", price:464 },
+    { id:"r-veng32-6000", name:"Corsair Vengeance 32 Go (2x16) DDR5-6000 CL36", gb:32, type:"DDR5", mhz:6000, speed:"6000 MHz", price:425 },
+    { id:"r-flare32-6000", name:"G.Skill Flare X5 32 Go (2x16) DDR5-6000 CL36 EXPO", gb:32, type:"DDR5", mhz:6000, speed:"6000 MHz", price:432 },
+    { id:"r-tz32-6000", name:"G.Skill Trident Z5 Neo RGB 32 Go DDR5-6000 CL30", gb:32, type:"DDR5", mhz:6000, speed:"6000 MHz", price:589 },
+    { id:"r-veng32-6400", name:"Corsair Vengeance RGB 32 Go (2x16) DDR5-6400 CL36", gb:32, type:"DDR5", mhz:6400, speed:"6400 MHz", price:489 },
     { id:"r-crucial32-6400", name:"Crucial Pro Overclocking 32 Go DDR5-6400 CL32", gb:32, type:"DDR5", mhz:6400, speed:"6400 MHz", price:449 },
-    { id:"r-tz32-7200", name:"G.Skill Trident Z5 RGB 32 Go DDR5-7200 CL36", gb:32, type:"DDR5", mhz:7200, speed:"7200 MHz", price:559 },
-    { id:"r-tz32-8000", name:"G.Skill Trident Z5 RGB 32 Go DDR5-8000 CL38", gb:32, type:"DDR5", mhz:8000, speed:"8000 MHz", price:629 },
+    { id:"r-tz32-7200", name:"G.Skill Trident Z5 RGB 32 Go DDR5-7200 CL36", gb:32, type:"DDR5", mhz:7200, speed:"7200 MHz", price:645 },
+    { id:"r-tz32-8000", name:"G.Skill Trident Z5 RGB 32 Go DDR5-8000 CL38", gb:32, type:"DDR5", mhz:8000, speed:"8000 MHz", price:729 },
   ]},
   { label: "DDR5 · 64 Go (création, multitâche)", items: [
-    { id:"r-fury64-6000", name:"Kingston FURY Beast 64 Go (2x32) DDR5-6000 CL36", gb:64, type:"DDR5", mhz:6000, speed:"6000 MHz", price:789 },
-    { id:"r-reneg64-6400", name:"Kingston FURY Renegade 64 Go (2x32) DDR5-6400 CL32", gb:64, type:"DDR5", mhz:6400, speed:"6400 MHz", price:849 },
-    { id:"r-veng64-6000", name:"Corsair Vengeance RGB 64 Go (2x32) DDR5-6000 CL30", gb:64, type:"DDR5", mhz:6000, speed:"6000 MHz", price:1229 },
+    { id:"r-fury64-6000", name:"Kingston FURY Beast 64 Go (2x32) DDR5-6000 CL36", gb:64, type:"DDR5", mhz:6000, speed:"6000 MHz", price:1029 },
+    { id:"r-reneg64-6400", name:"Kingston FURY Renegade 64 Go (2x32) DDR5-6400 CL32", gb:64, type:"DDR5", mhz:6400, speed:"6400 MHz", price:1149 },
+    { id:"r-veng64-6000", name:"Corsair Vengeance RGB 64 Go (2x32) DDR5-6000 CL30", gb:64, type:"DDR5", mhz:6000, speed:"6000 MHz", price:1051 },
   ]},
   { label: "DDR5 · 128 Go et plus (workstation)", items: [
-    { id:"r-veng128-5600", name:"Corsair Vengeance 128 Go (4x32) DDR5-5600 CL40", gb:128, type:"DDR5", mhz:5600, speed:"5600 MHz", price:1490 },
-    { id:"r-fury128-6000", name:"Kingston FURY Beast 128 Go (4x32) DDR5-6000 CL36", gb:128, type:"DDR5", mhz:6000, speed:"6000 MHz", price:1590 },
-    { id:"r-tz128-6400", name:"G.Skill Trident Z5 Neo RGB 128 Go (2x64) DDR5-6400", gb:128, type:"DDR5", mhz:6400, speed:"6400 MHz", price:1790 },
-    { id:"r-reneg256-5600", name:"Kingston FURY Renegade Pro 256 Go DDR5-5600 (workstation)", gb:256, type:"DDR5", mhz:5600, speed:"5600 MHz", price:2890, ws:true },
-    { id:"r-reneg256-6000", name:"Kingston FURY Renegade Pro 256 Go DDR5-6000 (workstation)", gb:256, type:"DDR5", mhz:6000, speed:"6000 MHz", price:3190, ws:true },
+    { id:"r-veng128-5600", name:"Corsair Vengeance 128 Go (4x32) DDR5-5600 CL40", gb:128, type:"DDR5", mhz:5600, speed:"5600 MHz", price:1990 },
+    { id:"r-fury128-6000", name:"Kingston FURY Beast 128 Go (4x32) DDR5-6000 CL36", gb:128, type:"DDR5", mhz:6000, speed:"6000 MHz", price:2090 },
+    { id:"r-tz128-6400", name:"G.Skill Trident Z5 Neo RGB 128 Go (2x64) DDR5-6400", gb:128, type:"DDR5", mhz:6400, speed:"6400 MHz", price:2390 },
+    { id:"r-reneg256-5600", name:"Kingston FURY Renegade Pro 256 Go DDR5-5600 (workstation)", gb:256, type:"DDR5", mhz:5600, speed:"5600 MHz", price:3890, ws:true },
+    { id:"r-reneg256-6000", name:"Kingston FURY Renegade Pro 256 Go DDR5-6000 (workstation)", gb:256, type:"DDR5", mhz:6000, speed:"6000 MHz", price:4290, ws:true },
   ]},
   { label: "DDR4 · plateformes 2019-2022", items: [
     { id:"r-lpx8-3200", name:"Corsair Vengeance LPX 8 Go (2x4) DDR4-3200 CL16", gb:8, type:"DDR4", mhz:3200, speed:"3200 MHz", price:69 },
