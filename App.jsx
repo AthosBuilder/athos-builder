@@ -350,25 +350,43 @@ function affLink(product, kind) {
   const asin = typeof product === "object" ? product.asin : null;
   const name = typeof product === "object" ? product.name : product;
   const isUsed = typeof product === "object" && product.used;
-  // Lien direct si l'ASIN est connu (le plus précis).
-  if (asin) {
-    return `https://www.amazon.fr/dp/${asin}${tagParam ? "?" + tagParam : ""}`;
-  }
-  // Sinon, recherche enrichie d'un mot-clé de catégorie : un nom seul comme
-  // "RTX 5090" ramène des accessoires "compatibles", pas la carte elle-même.
-  const hint = { gpu: "carte graphique", cpu: "processeur", mb: "carte mère",
-    ram: "kit mémoire ddr", ssd: "ssd", psu: "alimentation pc",
-    cooler: "refroidissement processeur", case: "boîtier pc", fan: "ventilateur boîtier" }[kind] || "";
-  // Pour les GPU, préfixer la gamme commerciale resserre nettement la recherche :
-  // "RTX 5070 Ti" seul remonte aussi les RTX 5070 simples.
-  let label = name;
+  // Lien direct si l'ASIN est connu : c'est le seul moyen d'être exact à 100 %.
+  if (asin) return `https://www.amazon.fr/dp/${asin}${tagParam ? "?" + tagParam : ""}`;
+
+  // Au-delà de ~7 mots, la recherche Amazon devient approximative et renvoie
+  // des produits sans rapport. On nettoie donc le nom avant de chercher :
+  // parenthèses, timings mémoire et détails de conditionnement sont du bruit.
+  let q = name
+    .replace(/\([^)]*\)/g, " ")        // (2x16), (pack de 5), (mATX)…
+    .replace(/\bCL\d+\b/gi, " ")      // CL30, CL36…
+    .replace(/\bPCIe\s*\d(\.\d)?\b/gi, " ")
+    .replace(/\s+/g, " ").trim();
+
+  // Gamme commerciale pour les cartes graphiques : "RTX 5070 Ti" seul remonte
+  // aussi les RTX 5070 simples.
   if (kind === "gpu") {
-    if (/^RTX/.test(name)) label = `NVIDIA GeForce ${name}`;
-    else if (/^RX /.test(name)) label = `AMD Radeon ${name}`;
-    else if (/^Arc/.test(name)) label = `Intel ${name}`;
+    if (/^RTX/.test(q)) q = `NVIDIA GeForce ${q}`;
+    else if (/^RX /.test(q)) q = `AMD Radeon ${q}`;
+    else if (/^Arc/.test(q)) q = `Intel ${q}`;
   }
-  const base = isUsed ? `${label} ${hint} occasion reconditionné` : `${label} ${hint}`;
-  return `https://www.amazon.fr/s?k=${encodeURIComponent(base.trim())}&i=computers${tagParam ? "&" + tagParam : ""}`;
+
+  // Mot-clé de catégorie ajouté seulement si le nom ne le sous-entend pas déjà
+  // et si la requête reste courte : sinon il dilue la recherche.
+  const implied = {
+    gpu: /carte graphique|GeForce|Radeon|Arc/i, cpu: /processeur|Ryzen|Core|i[3579]-|Threadripper/i,
+    mb: /carte m|B\d{3}|X\d{3}|Z\d{3}|H\d{3}|A\d{3}|TRX|WRX/i, ram: /DDR[45]/i,
+    ssd: /SSD|NVMe|SATA/i, psu: /alimentation|\d{3,4}\s*W/i,
+    cooler: /refroid|Liquid|Loop|Kraken|NH-|Dark Rock|Assassin|Spirit|Freezer/i,
+    case: /boîtier|Airflow|Flow|Meshify|North|Lancool|O11|Base|Forge/i,
+    fan: /ventilateur|PWM|Wings|P12/i,
+  }[kind];
+  const hint = { gpu: "carte graphique", cpu: "processeur", mb: "carte mère", ram: "mémoire DDR5",
+    ssd: "SSD", psu: "alimentation PC", cooler: "refroidissement CPU",
+    case: "boîtier PC", fan: "ventilateur PC" }[kind] || "";
+  if (hint && !(implied && implied.test(q)) && q.split(" ").length <= 5) q += ` ${hint}`;
+  if (isUsed) q += " occasion";
+
+  return `https://www.amazon.fr/s?k=${encodeURIComponent(q)}&i=computers${tagParam ? "&" + tagParam : ""}`;
 }
 
 /* ── Marques & visuels SVG ─────────────────────────── */
@@ -503,8 +521,10 @@ const GPU_GROUPS = [
 /* ── CPU (desktop 2019 → 2026) — score 100 = 9800X3D ──
    ddr: type mémoire supporté · tdp = charge réelle (dimensionnement ventirad) ── */
 const CPU_GROUPS = [
-  { label: "AMD · Ryzen 9000 (2024-25)", items: [
+  { label: "AMD · Ryzen 9000 (2024-26)", items: [
+    { id:"9950x3d2", name:"Ryzen 9 9950X3D2 Dual Edition", cores:16, score:99, price:959, ddr:"DDR5", tdp:250, socket:"AM5" },
     { id:"9950x3d", name:"Ryzen 9 9950X3D", cores:16, score:98, price:619, ddr:"DDR5", tdp:200, socket:"AM5" },
+    { id:"9850x3d", name:"Ryzen 7 9850X3D", cores:8, score:100, price:499, ddr:"DDR5", tdp:162, socket:"AM5" },
     { id:"9800x3d", name:"Ryzen 7 9800X3D", cores:8, score:100, price:429, ddr:"DDR5", tdp:160, socket:"AM5" },
     { id:"9950x", name:"Ryzen 9 9950X", cores:16, score:82, price:495, ddr:"DDR5", tdp:230, socket:"AM5" },
     { id:"9900x", name:"Ryzen 9 9900X", cores:12, score:80, price:367, ddr:"DDR5", tdp:160, socket:"AM5" },
@@ -617,30 +637,30 @@ const RAM_GROUPS = [
 ];
 const SSD_GROUPS = [
   { label: "SSD NVMe · 500 Go", items: [
-    { id:"s-p3plus500", name:"Crucial P3 Plus 500 Go NVMe", tb:0.5, price:99 },
-    { id:"s-nq790-500", name:"Lexar NQ790 500 Go NVMe", tb:0.5, price:95 },
+    { id:"s-p3plus500", name:"Crucial P3 Plus 500 Go NVMe", tb:0.5, price:129 },
+    { id:"s-nq790-500", name:"Lexar NQ790 500 Go NVMe", tb:0.5, price:119 },
   ]},
   { label: "SSD NVMe · 1 To", items: [
-    { id:"s-nq790-1", name:"Lexar NQ790 1 To NVMe PCIe 4.0", tb:1, price:169 },
-    { id:"s-p3plus1", name:"Crucial P3 Plus 1 To NVMe", tb:1, price:159 },
-    { id:"s-sn770-1", name:"WD Black SN770 1 To NVMe", tb:1, price:175 },
-    { id:"s-990evo1", name:"Samsung 990 EVO Plus 1 To NVMe", tb:1, price:185 },
+    { id:"s-nq790-1", name:"Lexar NQ790 1 To NVMe PCIe 4.0", tb:1, price:209 },
+    { id:"s-p3plus1", name:"Crucial P3 Plus 1 To NVMe", tb:1, price:199 },
+    { id:"s-sn770-1", name:"WD Black SN770 1 To NVMe", tb:1, price:229 },
+    { id:"s-990evo1", name:"Samsung 990 EVO Plus 1 To NVMe", tb:1, price:239 },
   ]},
   { label: "SSD NVMe · 2 To", items: [
-    { id:"s-t500-2", name:"Crucial T500 2 To NVMe PCIe 4.0", tb:2, price:319 },
-    { id:"s-nm790-2", name:"Lexar NM790 2 To NVMe", tb:2, price:305 },
-    { id:"s-sn850x-2", name:"WD Black SN850X 2 To NVMe", tb:2, price:349 },
-    { id:"s-990pro2", name:"Samsung 990 PRO 2 To NVMe", tb:2, price:345 },
+    { id:"s-t500-2", name:"Crucial T500 2 To NVMe PCIe 4.0", tb:2, price:369 },
+    { id:"s-nm790-2", name:"Lexar NM790 2 To NVMe", tb:2, price:355 },
+    { id:"s-sn850x-2", name:"WD Black SN850X 2 To NVMe", tb:2, price:399 },
+    { id:"s-990pro2", name:"Samsung 990 PRO 2 To NVMe", tb:2, price:429 },
   ]},
   { label: "SSD NVMe · 4 To", items: [
-    { id:"s-nm790-4", name:"Lexar NM790 4 To NVMe", tb:4, price:599 },
-    { id:"s-t500-4", name:"Crucial T500 4 To NVMe", tb:4, price:645 },
-    { id:"s-990pro4", name:"Samsung 990 PRO 4 To NVMe", tb:4, price:669 },
+    { id:"s-nm790-4", name:"Lexar NM790 4 To NVMe", tb:4, price:719 },
+    { id:"s-t500-4", name:"Crucial T500 4 To NVMe", tb:4, price:769 },
+    { id:"s-990pro4", name:"Samsung 990 PRO 4 To NVMe", tb:4, price:829 },
   ]},
   { label: "SSD SATA", items: [
-    { id:"s-bx500-1", name:"Crucial BX500 1 To SATA", tb:1, price:145 },
-    { id:"s-870evo1", name:"Samsung 870 EVO 1 To SATA", tb:1, price:165 },
-    { id:"s-bx500-500", name:"Crucial BX500 500 Go SATA", tb:0.5, price:85 },
+    { id:"s-bx500-1", name:"Crucial BX500 1 To SATA", tb:1, price:169 },
+    { id:"s-870evo1", name:"Samsung 870 EVO 1 To SATA", tb:1, price:195 },
+    { id:"s-bx500-500", name:"Crucial BX500 500 Go SATA", tb:0.5, price:99 },
   ]},
 ];
 const PSU_GROUPS = [
@@ -669,7 +689,7 @@ const PSU_GROUPS = [
     { id:"p-a650gls", name:"MSI MAG A650GLS", watts:650, price:75, cert:"Gold" },
   ]},
   { label: "Entrée de gamme (550 W)", items: [
-    { id:"p-vero550", name:"Endorfy Vero L6 550W", watts:550, price:50, cert:"Bronze" },
+    { id:"p-cx550", name:"Corsair CX550", watts:550, price:49, cert:"Bronze", asin:"B0CK8MXWK1" },
     { id:"p-sp10-550", name:"be quiet! System Power 10 550W", watts:550, price:59, cert:"Bronze" },
   ]},
 ];
@@ -702,7 +722,7 @@ const COOLER_GROUPS = [
 const FAN_GROUPS = [
   { label: "Ventilation boîtier", items: [
     { id:"f-arctic5", name:"ARCTIC P12 PWM PST (pack de 5)", flow:3, price:39 },
-    { id:"f-argb3", name:"Pack 3 ventilateurs ARGB 120 mm", flow:2, price:28 },
+    { id:"f-argb3", name:"ARCTIC P12 PWM PST A-RGB (pack de 3)", flow:2, price:35 },
     { id:"f-purewings3", name:"be quiet! Pure Wings 3 120 mm (x3)", flow:2, price:33 },
     { id:"f-stock", name:"Ventilateurs fournis avec le boîtier", flow:1, price:0 },
   ]},
@@ -715,26 +735,26 @@ const MB_GROUPS = [
     { id:"mb-trx50ws", name:"ASRock TRX50 WS", socket:"sTR5", ddr:"DDR5", price:790 },
   ]},
   { label: "AM5 · haut de gamme (X870 / X670)", items: [
-    { id:"mb-x870ehero", name:"ASUS ROG Crosshair X870E Hero", socket:"AM5", ddr:"DDR5", price:690 },
-    { id:"mb-x870estrix", name:"ASUS ROG Strix X870E-E Gaming WiFi", socket:"AM5", ddr:"DDR5", price:499 },
-    { id:"mb-x870emaster", name:"Gigabyte X870E Aorus Master", socket:"AM5", ddr:"DDR5", price:449 },
+    { id:"mb-x870ehero", name:"ASUS ROG Crosshair X870E Hero", socket:"AM5", ddr:"DDR5", price:715 },
+    { id:"mb-x870estrix", name:"ASUS ROG Strix X870E-E Gaming WiFi", socket:"AM5", ddr:"DDR5", price:519 },
+    { id:"mb-x870emaster", name:"Gigabyte X870E Aorus Master", socket:"AM5", ddr:"DDR5", price:459 },
     { id:"mb-x870ecarbon", name:"MSI MPG X870E Carbon WiFi", socket:"AM5", ddr:"DDR5", price:439 },
     { id:"mb-x670emaster", name:"Gigabyte X670E Aorus Master", socket:"AM5", ddr:"DDR5", price:399 },
     { id:"mb-x670estrix", name:"ASUS ROG Strix X670E-E Gaming WiFi", socket:"AM5", ddr:"DDR5", price:429 },
     { id:"mb-x670proart", name:"ASUS ProArt X670E-Creator WiFi", socket:"AM5", ddr:"DDR5", price:449 },
     { id:"mb-x870tomahawk", name:"MSI MAG X870 Tomahawk WiFi", socket:"AM5", ddr:"DDR5", price:329 },
-    { id:"mb-x870tuf", name:"ASUS TUF Gaming X870-Plus WiFi", socket:"AM5", ddr:"DDR5", price:299 },
-    { id:"mb-x870steel", name:"ASRock X870 Steel Legend WiFi", socket:"AM5", ddr:"DDR5", price:249 },
+    { id:"mb-x870tuf", name:"ASUS TUF Gaming X870-Plus WiFi", socket:"AM5", ddr:"DDR5", price:314 },
+    { id:"mb-x870steel", name:"ASRock X870 Steel Legend WiFi", socket:"AM5", ddr:"DDR5", price:259 },
     { id:"mb-x670steel", name:"ASRock X670E Steel Legend", socket:"AM5", ddr:"DDR5", price:279 },
   ]},
   { label: "AM5 · milieu de gamme (B850 / B650)", items: [
     { id:"mb-b850tomahawk", name:"MSI MAG B850 Tomahawk WiFi", socket:"AM5", ddr:"DDR5", price:249 },
-    { id:"mb-b650estrix", name:"ASUS ROG Strix B650E-F Gaming WiFi", socket:"AM5", ddr:"DDR5", price:269 },
-    { id:"mb-b850tuf", name:"ASUS TUF Gaming B850-Plus WiFi", socket:"AM5", ddr:"DDR5", price:229 },
+    { id:"mb-b650estrix", name:"ASUS ROG Strix B650E-F Gaming WiFi", socket:"AM5", ddr:"DDR5", price:279 },
+    { id:"mb-b850tuf", name:"ASUS TUF Gaming B850-Plus WiFi", socket:"AM5", ddr:"DDR5", price:239 },
     { id:"mb-b850aorus", name:"Gigabyte B850 Aorus Elite WiFi7", socket:"AM5", ddr:"DDR5", price:219 },
     { id:"mb-b650tomahawk", name:"MSI MAG B650 Tomahawk WiFi", socket:"AM5", ddr:"DDR5", price:209 },
     { id:"mb-b650aorus", name:"Gigabyte B650 Aorus Elite AX", socket:"AM5", ddr:"DDR5", price:189 },
-    { id:"mb-b650prime", name:"ASUS Prime B650M-A WiFi", socket:"AM5", ddr:"DDR5", price:159 },
+    { id:"mb-b650prime", name:"ASUS Prime B650M-A WiFi", socket:"AM5", ddr:"DDR5", price:169 },
     { id:"mb-b650mprors", name:"ASRock B650M Pro RS", socket:"AM5", ddr:"DDR5", price:129 },
   ]},
   { label: "AM5 · entrée de gamme (A620)", items: [
@@ -801,34 +821,34 @@ const MB_GROUPS = [
 ];
 const CASE_GROUPS = [
   { label: "Boîtiers · entrée de gamme", items: [
-    { id:"c-forge100r", name:"MSI MAG Forge 100R", fits:"large", mesh:true, price:60 },
+    { id:"c-forge100r", name:"MSI MAG Forge 100R", fits:"large", mesh:true, price:65 },
     { id:"c-vsk4000", name:"Antec VSK4000E-U3", fits:"std", mesh:false, price:55 },
     { id:"c-h3flow", name:"NZXT H3 Flow (mATX)", fits:"std", mesh:true, price:70 },
     { id:"c-forge120a", name:"MSI MAG Forge 120A Airflow", fits:"large", mesh:true, price:75 },
   ]},
   { label: "Boîtiers · gaming (le meilleur rapport qualité/prix)", items: [
-    { id:"c-3000d", name:"Corsair 3000D Airflow", fits:"large", mesh:true, price:85 },
-    { id:"c-h5flow", name:"NZXT H5 Flow", fits:"large", mesh:true, price:89 },
-    { id:"c-xtpro", name:"Phanteks XT Pro Ultra", fits:"large", mesh:true, price:95 },
-    { id:"c-4000d", name:"Corsair 4000D Airflow", fits:"large", mesh:true, price:99 },
+    { id:"c-3000d", name:"Corsair 3000D Airflow", fits:"large", mesh:true, price:95 },
+    { id:"c-h5flow", name:"NZXT H5 Flow", fits:"large", mesh:true, price:99 },
+    { id:"c-xtpro", name:"Phanteks XT Pro Ultra", fits:"large", mesh:true, price:105 },
+    { id:"c-4000d", name:"Corsair 4000D Airflow", fits:"large", mesh:true, price:125 },
     { id:"c-c5argb", name:"Antec C5 ARGB", fits:"large", mesh:true, price:90 },
-    { id:"c-purebase500dx", name:"be quiet! Pure Base 500DX", fits:"large", mesh:true, price:115 },
-    { id:"c-lancool216", name:"Lian Li Lancool 216", fits:"large", mesh:true, price:115 },
+    { id:"c-purebase500dx", name:"be quiet! Pure Base 500DX", fits:"large", mesh:true, price:129 },
+    { id:"c-lancool216", name:"Lian Li Lancool 216", fits:"large", mesh:true, price:125 },
     { id:"c-o11mini", name:"Lian Li O11 Dynamic Mini V2 Flow", fits:"large", mesh:true, price:125 },
-    { id:"c-h7flow", name:"NZXT H7 Flow", fits:"large", mesh:true, price:139 },
+    { id:"c-h7flow", name:"NZXT H7 Flow", fits:"large", mesh:true, price:149 },
   ]},
   { label: "Boîtiers · premium", items: [
-    { id:"c-north", name:"Fractal Design North TG", fits:"large", mesh:true, price:149 },
+    { id:"c-north", name:"Fractal Design North TG", fits:"large", mesh:true, price:159 },
     { id:"c-meshify2", name:"Fractal Design Meshify 2", fits:"large", mesh:true, price:155 },
     { id:"c-lancool3", name:"Lian Li Lancool III", fits:"large", mesh:true, price:165 },
-    { id:"c-5000d", name:"Corsair 5000D RGB Airflow", fits:"large", mesh:true, price:179 },
+    { id:"c-5000d", name:"Corsair 5000D RGB Airflow", fits:"large", mesh:true, price:195 },
     { id:"c-o11evo", name:"Lian Li O11 Dynamic EVO", fits:"large", mesh:false, price:189 },
   ]},
   { label: "Boîtiers · grand format (workstation)", items: [
     { id:"c-northxl", name:"Fractal Design North XL TG", fits:"large", mesh:true, price:219 },
     { id:"c-shadow800", name:"be quiet! Shadow Base 800 FX", fits:"large", mesh:true, price:229 },
     { id:"c-o11xl", name:"Lian Li O11 Dynamic XL", fits:"large", mesh:false, price:239 },
-    { id:"c-7000d", name:"Corsair 7000D Airflow", fits:"large", mesh:true, price:259 },
+    { id:"c-7000d", name:"Corsair 7000D Airflow", fits:"large", mesh:true, price:279 },
   ]},
 ];
 
