@@ -335,24 +335,6 @@ section[id]{scroll-margin-top:16px}
 }
 
 @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-/* ── Format PC (grand écran) : le téléphone reste en une colonne, inchangé ── */
-@media(min-width:1100px){
-  .app{max-width:1240px;padding:34px 44px 80px;display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));column-gap:22px;align-items:start}
-  .app>*{grid-column:1/-1}
-  .app>.hero{grid-column:1;align-self:center}
-  .app>.readout{grid-column:2;margin-top:0}
-  .app>.budget-panel{grid-column:1;position:sticky;top:18px}
-  .app>.picker{grid-column:2}
-  .app>#s-ai{grid-column:1}
-  .app>#s-uses{grid-column:2}
-  .hero h1{font-size:clamp(40px,4.2vw,58px)}
-  .panel{padding:26px}
-}
-@media(min-width:1500px){
-  .app{max-width:1380px}
-}
-
 `;
 
 /* ════════════════════════════════════════════════════════
