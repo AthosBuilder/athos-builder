@@ -338,19 +338,39 @@ section[id]{scroll-margin-top:16px}
 /* ── Disposition en colonnes (téléphone : tout s'empile dans l'ordre d'origine) ── */
 .cols{display:flex;flex-direction:column}
 .col{display:contents}
+.hero{order:-3}.readout{order:-2}.toc{order:-1}
 .budget-panel{order:1}.picker{order:2}#s-compat{order:3}.bn-panel{order:4}
 #s-perf{order:5}#s-ai{order:6}#s-uses{order:7}#s-compare{order:8}.share-panel{order:9}
-/* ── Format PC (grand écran) : une seule grande page, 3 colonnes, tout visible ── */
-@media(min-width:1100px){
-  .app{max-width:1640px;padding:18px 28px 40px}
-  .cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:start}
+.flow{display:none}
+/* ── Format PC (grand écran) : parcours guidé en 4 étapes, une seule page ── */
+@media(min-width:1200px){
+  .app{max-width:1760px;padding:14px 16px 40px}
+  .toc{display:none}
+  .flow{display:grid;grid-template-columns:300px minmax(0,1.4fr) minmax(0,1fr) minmax(0,1fr);gap:14px;margin:0 0 14px}
+  .flow-step{position:relative;display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:16px;
+    background:var(--panel);border:1px solid var(--line);text-decoration:none;color:var(--text);
+    transition:border-color .15s,transform .15s}
+  .flow-step:hover{border-color:var(--accent);transform:translateY(-1px)}
+  .flow-step:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .flow-n{flex-shrink:0;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;
+    background:var(--grad);color:#fff;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14px}
+  .flow-step b{display:block;font-size:14.5px;line-height:1.25}
+  .flow-step small{display:block;color:var(--muted);font-size:12px;line-height:1.35;margin-top:1px}
+  .flow-step:not(:last-child)::after{content:"";position:absolute;right:-12px;top:50%;width:11px;height:11px;
+    border-top:2.5px solid var(--accent);border-right:2.5px solid var(--accent);
+    transform:translateY(-50%) rotate(45deg);z-index:2}
+  .cols{display:grid;grid-template-columns:300px minmax(0,1.4fr) minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
   .col{display:flex;flex-direction:column;gap:16px;min-width:0}
   .col>*{margin-top:0}
   .col>.panel{margin-top:0;padding:18px}
-  .col>.hero{padding:6px 2px 0}
-  .hero h1{font-size:clamp(34px,3.2vw,46px)}
-  .col>.readout,.col>.toc{margin-top:0}
+  .col>.hero{padding:2px 2px 0}
+  .hero{order:0}.readout{order:2}.budget-panel{order:1}
+  .hero h1{font-size:clamp(32px,2.8vw,42px)}
+  .hero .sub{font-size:14px;margin-top:12px}
+  .fields{grid-template-columns:1fr 1fr}
+  .readout-price,.readout-price *{white-space:nowrap}
 }
+body:has(.app.dark){background:#120C0D}
 @media(min-width:2000px){
   .app{max-width:1900px}
 }
@@ -1495,6 +1515,12 @@ export default function App() {
       </button>
       {booting && <div className="tv-boot" aria-hidden="true"><span className="tv-line" /><span className="tv-flash" /></div>}
       <div className="ambient" aria-hidden="true" />
+    <nav className="flow" aria-label="Parcours en 4 étapes">
+      <a className="flow-step" href="#s-budget"><span className="flow-n">1</span><span><b>Ton budget</b><small>Choisis ton usage et ta somme</small></span></a>
+      <a className="flow-step" href="#s-parts"><span className="flow-n">2</span><span><b>Tes composants</b><small>Ajuste chaque pièce à ton goût</small></span></a>
+      <a className="flow-step" href="#s-compat"><span className="flow-n">3</span><span><b>Vérifie</b><small>Compatibilité, équilibre, FPS</small></span></a>
+      <a className="flow-step" href="#s-ai"><span className="flow-n">4</span><span><b>Décide &amp; partage</b><small>Usages, comparaison, lien</small></span></a>
+    </nav>
     <div className="cols">
     <div className="col col-a">
       <header className="hero">
@@ -1558,23 +1584,6 @@ export default function App() {
       {HAS_AFFILIATE && (
         <p className="disclosure">Liens d'affiliation : un achat via « Voir le prix » soutient le site, sans surcoût pour toi.</p>
       )}
-
-      <section className={`panel diag ${hasBlocker ? "diag-cpu" : "diag-ok"}`} id="s-compat">
-        <h2 className="panel-title">Compatibilité</h2>
-        <ul className="compat">
-          {checks.map((c, i) => (
-            <li key={i} className={`c-${c.lvl}`}>
-              <span className="dot">{c.lvl === "ok" ? "✓" : c.lvl === "warn" ? "!" : "✕"}</span>
-              <span>{c.msg}</span>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className={`panel bn-panel diag diag-${bn.type}`}>
-        <h2 className="panel-title">Équilibre CPU / GPU</h2>
-        <p className="diag-msg">{bn.msg}</p>
-      </section>
 
     </div>
     <div className="col col-b">
@@ -1640,6 +1649,23 @@ export default function App() {
 
     </div>
     <div className="col col-c">
+      <section className={`panel diag ${hasBlocker ? "diag-cpu" : "diag-ok"}`} id="s-compat">
+        <h2 className="panel-title">Compatibilité</h2>
+        <ul className="compat">
+          {checks.map((c, i) => (
+            <li key={i} className={`c-${c.lvl}`}>
+              <span className="dot">{c.lvl === "ok" ? "✓" : c.lvl === "warn" ? "!" : "✕"}</span>
+              <span>{c.msg}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className={`panel bn-panel diag diag-${bn.type}`}>
+        <h2 className="panel-title">Équilibre CPU / GPU</h2>
+        <p className="diag-msg">{bn.msg}</p>
+      </section>
+
       <section className="panel" id="s-perf">
        {isPro ? (
         <>
@@ -1683,6 +1709,8 @@ export default function App() {
        )}
       </section>
 
+    </div>
+    <div className="col col-d">
       <section className="panel" id="s-ai">
         <h2 className="panel-title">IA &amp; création</h2>
         <ul className="compat">
