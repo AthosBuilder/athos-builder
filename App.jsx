@@ -335,6 +335,25 @@ section[id]{scroll-margin-top:16px}
 }
 
 @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+/* ── Disposition en colonnes (téléphone : tout s'empile dans l'ordre d'origine) ── */
+.cols{display:flex;flex-direction:column}
+.col{display:contents}
+.budget-panel{order:1}.picker{order:2}#s-compat{order:3}.bn-panel{order:4}
+#s-perf{order:5}#s-ai{order:6}#s-uses{order:7}#s-compare{order:8}.share-panel{order:9}
+/* ── Format PC (grand écran) : une seule grande page, 3 colonnes, tout visible ── */
+@media(min-width:1100px){
+  .app{max-width:1640px;padding:18px 28px 40px}
+  .cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:start}
+  .col{display:flex;flex-direction:column;gap:16px;min-width:0}
+  .col>*{margin-top:0}
+  .col>.panel{margin-top:0;padding:18px}
+  .col>.hero{padding:6px 2px 0}
+  .hero h1{font-size:clamp(34px,3.2vw,46px)}
+  .col>.readout,.col>.toc{margin-top:0}
+}
+@media(min-width:2000px){
+  .app{max-width:1900px}
+}
 `;
 
 /* ════════════════════════════════════════════════════════
@@ -1476,6 +1495,8 @@ export default function App() {
       </button>
       {booting && <div className="tv-boot" aria-hidden="true"><span className="tv-line" /><span className="tv-flash" /></div>}
       <div className="ambient" aria-hidden="true" />
+    <div className="cols">
+    <div className="col col-a">
       <header className="hero">
         <div className="brand"><span className="brand-name">Athos<span className="g">Builder</span></span><span className="brand-tag">simule, compare, assemble en un clic</span></div>
         <h1>Ton budget.<br /><span className="g">Ta config.</span></h1>
@@ -1538,6 +1559,25 @@ export default function App() {
         <p className="disclosure">Liens d'affiliation : un achat via « Voir le prix » soutient le site, sans surcoût pour toi.</p>
       )}
 
+      <section className={`panel diag ${hasBlocker ? "diag-cpu" : "diag-ok"}`} id="s-compat">
+        <h2 className="panel-title">Compatibilité</h2>
+        <ul className="compat">
+          {checks.map((c, i) => (
+            <li key={i} className={`c-${c.lvl}`}>
+              <span className="dot">{c.lvl === "ok" ? "✓" : c.lvl === "warn" ? "!" : "✕"}</span>
+              <span>{c.msg}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className={`panel bn-panel diag diag-${bn.type}`}>
+        <h2 className="panel-title">Équilibre CPU / GPU</h2>
+        <p className="diag-msg">{bn.msg}</p>
+      </section>
+
+    </div>
+    <div className="col col-b">
       <section className="panel picker" id="s-parts">
         <h2 className="panel-title">Composants</h2>
         <div className="fields">
@@ -1598,23 +1638,8 @@ export default function App() {
         </div>
       </section>
 
-      <section className={`panel diag ${hasBlocker ? "diag-cpu" : "diag-ok"}`} id="s-compat">
-        <h2 className="panel-title">Compatibilité</h2>
-        <ul className="compat">
-          {checks.map((c, i) => (
-            <li key={i} className={`c-${c.lvl}`}>
-              <span className="dot">{c.lvl === "ok" ? "✓" : c.lvl === "warn" ? "!" : "✕"}</span>
-              <span>{c.msg}</span>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className={`panel diag diag-${bn.type}`}>
-        <h2 className="panel-title">Équilibre CPU / GPU</h2>
-        <p className="diag-msg">{bn.msg}</p>
-      </section>
-
+    </div>
+    <div className="col col-c">
       <section className="panel" id="s-perf">
        {isPro ? (
         <>
@@ -1740,6 +1765,8 @@ export default function App() {
         </button>
       </section>
 
+    </div>
+    </div>
       <footer className="foot">
         <nav className="foot-nav">
           <button onClick={() => setPage("legal")}>Mentions légales &amp; affiliation</button>
